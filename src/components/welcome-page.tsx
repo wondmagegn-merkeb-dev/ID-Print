@@ -55,7 +55,7 @@ export function WelcomePage() {
                 <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-in fade-in slide-in-from-bottom-7 duration-1000 delay-300">
                 <Button asChild size="lg" className="shadow-lg shadow-primary/20">
                     <Link href="/auth/signup">
-                    Get Started for Free <ArrowRight className="ml-2" />
+                    Get Started <ArrowRight className="ml-2" />
                     </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
@@ -68,7 +68,7 @@ export function WelcomePage() {
             <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
                 <Image
-                src="https://placehold.co/600x400.png"
+                src="/hero-image.png"
                 alt="ID Batcher workflow illustration"
                 width={600}
                 height={400}

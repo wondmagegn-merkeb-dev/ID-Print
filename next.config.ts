@@ -10,10 +10,7 @@ const nextConfig: NextConfig = {
   },
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'placehold.co',
-      },
+      
     ],
   },
   webpack: (config, { isServer }) => {
