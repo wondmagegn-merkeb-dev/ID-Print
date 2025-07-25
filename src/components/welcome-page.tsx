@@ -31,55 +31,48 @@ function WelcomeHeader() {
   );
 }
 
-function Feature({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-start">
-      <CheckCircle className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
-      <span className="text-muted-foreground">{children}</span>
-    </div>
-  );
-}
-
 export function WelcomePage() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="flex flex-col min-h-screen bg-background text-foreground">
       <WelcomeHeader />
-      <main className="container mx-auto px-4 py-16 sm:py-24">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6">
-            <div className="inline-block bg-primary/10 text-primary font-semibold px-4 py-1 rounded-full text-sm">
-              Effortless ID Processing
+      <main className="flex-1">
+        <div className="container mx-auto px-4 py-16 sm:py-24">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+                <div className="inline-block bg-primary/10 text-primary font-semibold px-4 py-1 rounded-full text-sm">
+                Effortless ID Processing
+                </div>
+                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold font-headline text-foreground leading-tight">
+                Automate Your ID Card Workflow
+                </h1>
+                <p className="text-lg text-muted-foreground max-w-xl">
+                Tired of manually formatting ID cards? ID Batcher takes your individual ID images or PDFs and automatically arranges them onto A4 sheets, ready for printing.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Button asChild size="lg" className="shadow-lg shadow-primary/20">
+                    <Link href="/auth/signup">
+                    Get Started for Free <ArrowRight className="ml-2" />
+                    </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg">
+                    <Link href="/auth/signin">
+                    I have an account
+                    </Link>
+                </Button>
+                </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold font-headline text-foreground leading-tight">
-              Automate Your ID Card Workflow
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-xl">
-              Tired of manually formatting ID cards? ID Batcher takes your individual ID images or PDFs and automatically arranges them onto A4 sheets, ready for printing.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button asChild size="lg" className="shadow-lg shadow-primary/20">
-                <Link href="/auth/signup">
-                  Get Started for Free <ArrowRight className="ml-2" />
-                </Link>
-              </Button>
-              <Button asChild variant="outline" size="lg">
-                <Link href="/auth/signin">
-                  I have an account
-                </Link>
-              </Button>
+            <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
+                <Image
+                src="https://placehold.co/600x400.png"
+                alt="ID Batcher workflow illustration"
+                width={600}
+                height={400}
+                className="rounded-2xl shadow-2xl relative"
+                data-ai-hint="id card workflow"
+                />
             </div>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
-            <Image
-              src="https://placehold.co/600x400.png"
-              alt="ID Batcher workflow illustration"
-              width={600}
-              height={400}
-              className="rounded-2xl shadow-2xl relative"
-              data-ai-hint="id card workflow"
-            />
-          </div>
+            </div>
         </div>
       </main>
       <footer className="border-t">
