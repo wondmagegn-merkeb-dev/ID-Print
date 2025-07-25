@@ -68,12 +68,11 @@ export function WelcomePage() {
             <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
                 <Image
-                src="https://placehold.co/600x400.png"
+                src="/welcome-illustration.png"
                 alt="ID Batcher workflow illustration"
                 width={600}
                 height={400}
                 className="rounded-2xl shadow-2xl relative"
-                data-ai-hint="id card workflow"
                 />
             </div>
             </div>
