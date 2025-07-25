@@ -48,7 +48,7 @@ export function SignInForm() {
         description: "Welcome back!",
       })
       setIsLoading(false);
-      router.push('/');
+      router.push('/dashboard');
     }, 1000);
   }
 

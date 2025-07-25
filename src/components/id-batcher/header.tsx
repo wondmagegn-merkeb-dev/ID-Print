@@ -11,7 +11,7 @@ type HeaderProps = {
 
 export function Header({ credits }: HeaderProps) {
   // Mock user state
-  const isLoggedIn = false;
+  const isLoggedIn = true;
 
   return (
     <header className="bg-card border-b shadow-sm sticky top-0 z-40">

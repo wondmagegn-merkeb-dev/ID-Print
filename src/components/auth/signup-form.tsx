@@ -51,7 +51,7 @@ export function SignUpForm() {
         description: "You have successfully signed up.",
       })
       setIsLoading(false);
-      router.push('/');
+      router.push('/dashboard');
     }, 1000);
   }
 

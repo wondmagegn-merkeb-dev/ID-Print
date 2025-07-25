@@ -1,9 +1,5 @@
-import { IdBatcher } from '@/components/id-batcher';
+import { WelcomePage } from '@/components/welcome-page';
 
 export default function Home() {
-  return (
-    <div className="min-h-screen w-full">
-      <IdBatcher />
-    </div>
-  );
+  return <WelcomePage />;
 }
