@@ -1,12 +1,18 @@
 "use client";
 
-import type { ExtractIdDataOutput } from '@/ai/flows/extract-id-data';
 import { Button } from '@/components/ui/button';
 import { Download, Redo } from 'lucide-react';
 import { IdCardPreview } from './id-card-preview';
+import React from 'react';
+
+export type IdData = {
+  name: string;
+  dateOfBirth: string;
+  otherDetails: string;
+};
 
 type ImpositionPreviewProps = {
-  data: ExtractIdDataOutput[];
+  data: IdData[];
   onStartOver: () => void;
 };
 

@@ -1,10 +1,10 @@
 "use client";
 
-import type { ExtractIdDataOutput } from '@/ai/flows/extract-id-data';
 import { UserSquare2 } from 'lucide-react';
+import { IdData } from './imposition-preview';
 
 type IdCardPreviewProps = {
-  data: ExtractIdDataOutput;
+  data: IdData;
   side: 'front' | 'back';
 };
 

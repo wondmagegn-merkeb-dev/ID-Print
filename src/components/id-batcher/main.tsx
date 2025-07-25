@@ -1,7 +1,5 @@
 "use client";
 
-import type { ExtractIdDataOutput } from '@/ai/flows/extract-id-data';
-import { extractIdData } from '@/ai/flows/extract-id-data';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
@@ -15,7 +13,7 @@ import {
 import React, { useState } from 'react';
 import { FileUploader } from './file-uploader';
 import { Header } from './header';
-import { ImpositionPreview } from './imposition-preview';
+import { ImpositionPreview, IdData } from './imposition-preview';
 
 type FileWithPreview = {
   file: File;
@@ -24,7 +22,7 @@ type FileWithPreview = {
 
 export function IdBatcher() {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const [extractedData, setExtractedData] = useState<ExtractIdDataOutput[]>([]);
+  const [extractedData, setExtractedData] = useState<IdData[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [credits, setCredits] = useState(100);
@@ -69,41 +67,19 @@ export function IdBatcher() {
     setIsProcessing(true);
     setError(null);
 
-    const data: ExtractIdDataOutput[] = [];
-
-    for (const fileWithPreview of files) {
-      try {
-        const reader = new FileReader();
-        reader.readAsDataURL(fileWithPreview.file);
-        await new Promise<void>((resolve, reject) => {
-          reader.onload = async () => {
-            try {
-              const photoDataUri = reader.result as string;
-              const result = await extractIdData({ photoDataUri });
-              data.push(result);
-              resolve();
-            } catch (e) {
-              reject(e);
-            }
-          };
-          reader.onerror = error => {
-            reject(error);
-          };
-        });
-      } catch (e) {
-        const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred';
-        setError(
-          `Failed to process ${fileWithPreview.file.name}. Please try again. Error: ${errorMessage}`
-        );
-        toast({
-          variant: 'destructive',
-          title: 'Processing Error',
-          description: `Failed to process ${fileWithPreview.file.name}.`,
-        });
-        setIsProcessing(false);
-        return;
-      }
-    }
+    // This part is changed to not use AI.
+    const data: IdData[] = files.map(fileWithPreview => {
+      const fileName = fileWithPreview.file.name;
+      const name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+      return {
+        name: name.replace(/[-_]/g, ' '),
+        dateOfBirth: '1990-01-01',
+        otherDetails: 'Placeholder details',
+      };
+    });
+    
+    // Simulate processing time
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     setExtractedData(data);
     setCredits(prev => prev - files.length);
@@ -138,7 +114,7 @@ export function IdBatcher() {
               ID Card Processing Made Easy
             </h1>
             <p className="text-center text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Upload ID images (PNG, JPG) to automatically extract information and format it for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
+              Upload ID images (PNG, JPG) to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
             </p>
             <Card className="mt-8 shadow-lg">
               <CardContent className="p-6">
