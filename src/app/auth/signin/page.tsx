@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 export default function SignInPage() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="max-w-md w-full p-8">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="max-w-md w-full p-8 bg-card border rounded-xl shadow-lg animate-in fade-in zoom-in-95 duration-500">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold font-headline text-primary">Welcome Back</h1>
           <p className="text-muted-foreground mt-2">
