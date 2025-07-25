@@ -21,7 +21,7 @@ function WelcomeHeader() {
         </div>
         <div className="flex items-center gap-2">
             <ThemeToggle />
-            <div className="flex items-center p-1 rounded-full border bg-background shadow-sm">
+            <div className="flex items-center p-1 rounded-full bg-muted shadow-sm">
                 <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
                 <Link href="/auth/signin">Sign In</Link>
                 </Button>
