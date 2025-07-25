@@ -81,27 +81,6 @@ export function WelcomePage() {
             />
           </div>
         </div>
-
-        <div className="text-center mt-24 sm:mt-32">
-          <h2 className="text-3xl font-bold font-headline mb-4">Why Choose ID Batcher?</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
-            Save time and eliminate tedious manual work with our streamlined process. Perfect for schools, businesses, and organizations of any size.
-          </p>
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            <div className="p-6 bg-card border rounded-xl space-y-3">
-              <h3 className="font-bold text-lg">Batch Processing</h3>
-              <p className="text-muted-foreground text-sm">Upload multiple ID files at once and process them in a single batch.</p>
-            </div>
-            <div className="p-6 bg-card border rounded-xl space-y-3">
-              <h3 className="font-bold text-lg">Smart Layout</h3>
-              <p className="text-muted-foreground text-sm">Automatically arranges front and back sides on separate, print-ready A4 pages.</p>
-            </div>
-            <div className="p-6 bg-card border rounded-xl space-y-3">
-              <h3 className="font-bold text-lg">Multi-Format Support</h3>
-              <p className="text-muted-foreground text-sm">Works with common image files (PNG, JPG) and PDFs for maximum flexibility.</p>
-            </div>
-          </div>
-        </div>
       </main>
       <footer className="border-t">
         <div className="container mx-auto px-4 py-6 text-center text-muted-foreground text-sm">
