@@ -1,3 +1,9 @@
+import { IdBatcher } from '@/components/id-batcher/main';
+
 export default function Home() {
-  return <></>;
+  return (
+    <div className="min-h-screen w-full">
+      <IdBatcher />
+    </div>
+  );
 }
