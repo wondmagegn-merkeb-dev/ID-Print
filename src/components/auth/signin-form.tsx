@@ -65,10 +65,24 @@ export function SignInForm() {
       router.push('/dashboard');
     }, 1000);
   }
+  
+  function onInvalid(errors: FieldErrors<z.infer<typeof formSchema>>) {
+    const firstErrorField = getFirstError(errors);
+    if (firstErrorField) {
+      const errorMessage = errors[firstErrorField]?.message;
+      if (errorMessage && typeof errorMessage === 'string') {
+        toast({
+            variant: "destructive",
+            title: "Invalid Input",
+            description: errorMessage,
+        });
+      }
+    }
+  }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6">
         <FormField
           control={form.control}
           name="email"
@@ -81,7 +95,6 @@ export function SignInForm() {
                   <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", firstError === 'email' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -100,12 +113,11 @@ export function SignInForm() {
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'password' && "border-destructive ring-2 ring-destructive/20")} />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground flex items-center justify-center">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />

@@ -12,7 +12,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  useFormField,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
@@ -60,10 +59,24 @@ export function ForgotPasswordForm() {
       form.reset();
     }, 1000);
   }
+  
+  function onInvalid(errors: FieldErrors<z.infer<typeof formSchema>>) {
+    const firstErrorField = getFirstError(errors);
+    if (firstErrorField) {
+      const errorMessage = errors[firstErrorField]?.message;
+      if (errorMessage && typeof errorMessage === 'string') {
+        toast({
+            variant: "destructive",
+            title: "Invalid Input",
+            description: errorMessage,
+        });
+      }
+    }
+  }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6">
         <FormField
           control={form.control}
           name="email"
@@ -76,7 +89,6 @@ export function ForgotPasswordForm() {
                   <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", firstError === 'email' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
