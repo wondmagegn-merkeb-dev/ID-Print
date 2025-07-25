@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, FieldErrors } from "react-hook-form"
 import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -61,9 +61,21 @@ export function SignUpForm() {
     }, 1000);
   }
 
+  function onInvalid(errors: FieldErrors<z.infer<typeof formSchema>>) {
+    const errorMessages = Object.values(errors).map((error) => error?.message);
+    if (errorMessages.length > 0 && errorMessages[0]) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Input",
+        description: errorMessages[0],
+      })
+    }
+  }
+
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-4">
         <FormField
           control={form.control}
           name="name"
@@ -76,7 +88,6 @@ export function SignUpForm() {
                   <Input placeholder="John Doe" {...field} className={cn("pl-10", form.formState.errors.name && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -92,7 +103,6 @@ export function SignUpForm() {
                   <Input placeholder="(123) 456-7890" {...field} className={cn("pl-10", form.formState.errors.phone && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -108,7 +118,6 @@ export function SignUpForm() {
                   <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", form.formState.errors.email && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
@@ -124,7 +133,6 @@ export function SignUpForm() {
                   <Input type="password" placeholder="••••••••" {...field} className={cn("pl-10", form.formState.errors.password && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
