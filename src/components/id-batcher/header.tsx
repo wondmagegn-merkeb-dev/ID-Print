@@ -36,7 +36,7 @@ export function Header({ credits }: HeaderProps) {
             </Button>
           ) : (
              <div className="flex items-center p-1 rounded-full border bg-background shadow-sm">
-                <Button variant="ghost" size="sm" className="rounded-full" asChild>
+                <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
                   <Link href="/auth/signin">Sign In</Link>
                 </Button>
                 <Button size="sm" className="rounded-full" asChild>

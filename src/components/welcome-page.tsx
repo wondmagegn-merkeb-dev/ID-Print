@@ -19,7 +19,7 @@ function WelcomeHeader() {
           </Link>
         </div>
         <div className="flex items-center p-1 rounded-full border bg-card shadow-sm">
-          <Button variant="ghost" size="sm" className="rounded-full" asChild>
+          <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
             <Link href="/auth/signin">Sign In</Link>
           </Button>
           <Button size="sm" className="rounded-full" asChild>
