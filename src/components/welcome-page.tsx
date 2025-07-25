@@ -43,16 +43,16 @@ export function WelcomePage() {
         <div className="container mx-auto px-4 py-16 sm:py-24">
             <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-                <div className="inline-block bg-primary/10 text-primary font-semibold px-4 py-1 rounded-full text-sm">
+                <div className="inline-block bg-primary/10 text-primary font-semibold px-4 py-1 rounded-full text-sm animate-in fade-in slide-in-from-bottom-4 duration-1000">
                 Effortless ID Processing
                 </div>
-                <h1 className="text-4xl sm:text-5xl font-extrabold font-headline text-foreground leading-tight">
+                <h1 className="text-4xl sm:text-5xl font-extrabold font-headline text-foreground leading-tight animate-in fade-in slide-in-from-bottom-5 duration-1000 delay-100">
                 Automate Your ID Card Workflow
                 </h1>
-                <p className="text-lg text-muted-foreground max-w-xl">
+                <p className="text-lg text-muted-foreground max-w-xl animate-in fade-in slide-in-from-bottom-6 duration-1000 delay-200">
                 Effortlessly convert your ID scans into organized documents. Upload your PDF or image files, and let ID Batcher format them into a professional A4 layout, ready for export.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-in fade-in slide-in-from-bottom-7 duration-1000 delay-300">
                 <Button asChild size="lg" className="shadow-lg shadow-primary/20">
                     <Link href="/auth/signup">
                     Get Started for Free <ArrowRight className="ml-2" />
@@ -65,7 +65,7 @@ export function WelcomePage() {
                 </Button>
                 </div>
             </div>
-            <div className="relative">
+            <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
                 <Image
                 src="/welcome-illustration.png"
