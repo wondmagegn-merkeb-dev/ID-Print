@@ -2,7 +2,8 @@
 
 import { PDFExtract } from 'pdf.js-extract';
 
-export async function extractTextFromPdf(fileBuffer: Buffer) {
+export async function extractTextFromPdf(base64Data: string) {
+  const fileBuffer = Buffer.from(base64Data, 'base64');
   const pdfExtractor = new PDFExtract();
   try {
     const data = await pdfExtractor.extract(fileBuffer, {});

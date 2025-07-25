@@ -21,6 +21,16 @@ type FileWithPreview = {
   preview: string;
 };
 
+function arrayBufferToBase64(buffer: ArrayBuffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  const len = bytes.byteLength;
+  for (let i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return window.btoa(binary);
+}
+
 export function IdBatcher() {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const [extractedData, setExtractedData] = useState<IdData[]>([]);
@@ -78,7 +88,8 @@ export function IdBatcher() {
       if (file.type === 'application/pdf') {
         try {
           const buffer = await file.arrayBuffer();
-          const data = await extractTextFromPdf(Buffer.from(buffer));
+          const base64Data = arrayBufferToBase64(buffer);
+          const data = await extractTextFromPdf(base64Data);
           otherDetails = data;
         } catch (e) {
           console.error('Error extracting PDF:', e);

@@ -68,7 +68,7 @@ export function WelcomePage() {
             <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
                 <Image
-                src="/hero-image.png"
+                src="/hero-fyda.png"
                 alt="ID Batcher workflow illustration"
                 width={600}
                 height={400}
