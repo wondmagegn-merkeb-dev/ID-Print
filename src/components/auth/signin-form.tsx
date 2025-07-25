@@ -1,3 +1,4 @@
+
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -62,7 +63,13 @@ export function SignInForm() {
         description: "Welcome back!",
       })
       setIsLoading(false);
-      router.push('/dashboard');
+      
+      // Role-based redirection
+      if (values.email === 'admin@example.com') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/dashboard');
+      }
     }, 1000);
   }
   
