@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { User, Phone, Mail, Lock } from "lucide-react"
+import { User, Phone, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -34,6 +34,8 @@ const formSchema = z.object({
 export function SignUpForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,7 +64,7 @@ export function SignUpForm() {
   }
 
   function onInvalid(errors: FieldErrors<z.infer<typeof formSchema>>) {
-    const errorMessages = Object.values(errors).map((error) => error?.message);
+    const errorMessages = Object.values(errors).filter(e => e.ref?.name !== 'confirmPassword').map((error) => error?.message);
     if (errorMessages.length > 0 && errorMessages[0]) {
       toast({
         variant: "destructive",
@@ -130,7 +132,10 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" placeholder="••••••••" {...field} className={cn("pl-10", form.formState.errors.password && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", form.formState.errors.password && "border-destructive ring-2 ring-destructive/20")} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground">
+                    {showPassword ? <EyeOff /> : <Eye />}
+                  </button>
                 </div>
               </FormControl>
             </FormItem>
@@ -145,7 +150,10 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" placeholder="••••••••" {...field} className={cn("pl-10", form.formState.errors.confirmPassword && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", form.formState.errors.confirmPassword && "border-destructive ring-2 ring-destructive/20")} />
+                   <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground">
+                    {showConfirmPassword ? <EyeOff /> : <Eye />}
+                  </button>
                 </div>
               </FormControl>
               <FormMessage />
