@@ -21,7 +21,7 @@ function WelcomeHeader() {
         </div>
         <div className="flex items-center gap-2">
             <ThemeToggle />
-            <div className="flex items-center p-1 rounded-full bg-muted shadow-sm">
+            <div className="flex items-center p-1 rounded-full bg-primary/10 shadow-sm">
                 <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
                 <Link href="/auth/signin">Sign In</Link>
                 </Button>
@@ -68,10 +68,11 @@ export function WelcomePage() {
             <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
                 <Image
-                src="/welcome-illustration.png"
+                src="https://placehold.co/600x400.png"
                 alt="ID Batcher workflow illustration"
                 width={600}
                 height={400}
+                data-ai-hint="workflow illustration"
                 className="rounded-2xl shadow-2xl relative transition-transform duration-500 ease-in-out hover:scale-105"
                 />
             </div>

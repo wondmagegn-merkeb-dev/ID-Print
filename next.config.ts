@@ -9,7 +9,12 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   images: {
-    remotePatterns: [],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+    ],
   },
   webpack: (config, { isServer }) => {
     // This is to address an issue with pdf.js-extract trying to require 'canvas'
