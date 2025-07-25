@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, FieldErrors } from "react-hook-form"
 import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -43,6 +43,18 @@ export function ResetPasswordForm() {
     },
   })
 
+  function getFirstError(errors: FieldErrors<z.infer<typeof formSchema>>) {
+    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['password', 'confirmPassword'];
+    for (const field of fieldOrder) {
+      if (errors[field]) {
+        return field;
+      }
+    }
+    return undefined;
+  }
+  
+  const firstError = getFirstError(form.formState.errors);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     console.log(values)
@@ -69,7 +81,7 @@ export function ResetPasswordForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", form.formState.errors.password && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'password' && "border-destructive ring-2 ring-destructive/20")} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground">
                     {showPassword ? <EyeOff /> : <Eye />}
                   </button>
@@ -88,7 +100,7 @@ export function ResetPasswordForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", form.formState.errors.confirmPassword && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'confirmPassword' && "border-destructive ring-2 ring-destructive/20")} />
                   <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground">
                     {showConfirmPassword ? <EyeOff /> : <Eye />}
                   </button>

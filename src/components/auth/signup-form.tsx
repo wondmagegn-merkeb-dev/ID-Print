@@ -49,6 +49,18 @@ export function SignUpForm() {
     },
   })
 
+  function getFirstError(errors: FieldErrors<z.infer<typeof formSchema>>) {
+    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'password', 'confirmPassword'];
+    for (const field of fieldOrder) {
+      if (errors[field]) {
+        return field;
+      }
+    }
+    return undefined;
+  }
+
+  const firstError = getFirstError(form.formState.errors);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     console.log(values)
@@ -64,13 +76,16 @@ export function SignUpForm() {
   }
 
   function onInvalid(errors: FieldErrors<z.infer<typeof formSchema>>) {
-    const errorMessages = Object.values(errors).filter(e => e.ref?.name !== 'confirmPassword').map((error) => error?.message);
-    if (errorMessages.length > 0 && errorMessages[0]) {
-      toast({
-        variant: "destructive",
-        title: "Invalid Input",
-        description: errorMessages[0],
-      })
+    const firstErrorField = getFirstError(errors);
+    if (firstErrorField) {
+      const errorMessage = errors[firstErrorField]?.message;
+      if (errorMessage && typeof errorMessage === 'string') {
+        toast({
+            variant: "destructive",
+            title: "Invalid Input",
+            description: errorMessage,
+        });
+      }
     }
   }
 
@@ -87,7 +102,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="John Doe" {...field} className={cn("pl-10", form.formState.errors.name && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input placeholder="John Doe" {...field} className={cn("pl-10", firstError === 'name' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
             </FormItem>
@@ -102,7 +117,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="(123) 456-7890" {...field} className={cn("pl-10", form.formState.errors.phone && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input placeholder="(123) 456-7890" {...field} className={cn("pl-10", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
             </FormItem>
@@ -117,7 +132,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", form.formState.errors.email && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", firstError === 'email' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
             </FormItem>
@@ -132,7 +147,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", form.formState.errors.password && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'password' && "border-destructive ring-2 ring-destructive/20")} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground">
                     {showPassword ? <EyeOff /> : <Eye />}
                   </button>
@@ -150,7 +165,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", form.formState.errors.confirmPassword && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'confirmPassword' && "border-destructive ring-2 ring-destructive/20")} />
                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground">
                     {showConfirmPassword ? <EyeOff /> : <Eye />}
                   </button>

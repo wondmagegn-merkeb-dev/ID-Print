@@ -1,7 +1,7 @@
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
+import { useForm, FieldErrors } from "react-hook-form"
 import * as z from "zod"
 
 import { Button } from "@/components/ui/button"
@@ -35,6 +35,18 @@ export function ForgotPasswordForm() {
     },
   })
 
+  function getFirstError(errors: FieldErrors<z.infer<typeof formSchema>>) {
+    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['email'];
+    for (const field of fieldOrder) {
+      if (errors[field]) {
+        return field;
+      }
+    }
+    return undefined;
+  }
+
+  const firstError = getFirstError(form.formState.errors);
+
   function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
     console.log(values)
@@ -61,7 +73,7 @@ export function ForgotPasswordForm() {
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", form.formState.errors.email && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", firstError === 'email' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />
