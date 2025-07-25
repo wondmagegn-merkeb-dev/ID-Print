@@ -14,6 +14,7 @@ import React, { useState } from 'react';
 import { FileUploader } from './file-uploader';
 import { Header } from './header';
 import { ImpositionPreview, IdData } from './imposition-preview';
+import { PDFExtract } from 'pdf.js-extract';
 
 type FileWithPreview = {
   file: File;
@@ -50,7 +51,7 @@ export function IdBatcher() {
       toast({
         variant: 'destructive',
         title: 'No files selected',
-        description: 'Please upload at least one ID image to process.',
+        description: 'Please upload at least one ID image or PDF to process.',
       });
       return;
     }
@@ -67,24 +68,49 @@ export function IdBatcher() {
     setIsProcessing(true);
     setError(null);
 
-    // This part is changed to not use AI.
-    const data: IdData[] = files.map(fileWithPreview => {
-      const fileName = fileWithPreview.file.name;
+    const pdfExtractor = new PDFExtract();
+
+    const dataPromises = files.map(async (fileWithPreview) => {
+      const { file } = fileWithPreview;
+      const fileName = file.name;
       const name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
+
+      let otherDetails = 'Placeholder details for non-PDF file.';
+      
+      if (file.type === 'application/pdf') {
+        try {
+          const buffer = await file.arrayBuffer();
+          const extracted = await pdfExtractor.extract(buffer, {});
+          otherDetails = extracted.pages.map(page => page.content.map(c => c.str).join(' ')).join('\n\n');
+        } catch (e) {
+          console.error('Error extracting PDF:', e);
+          otherDetails = 'Could not extract text from PDF.';
+          // Optionally, set an error state or toast here
+        }
+      }
+
       return {
         name: name.replace(/[-_]/g, ' '),
-        dateOfBirth: '1990-01-01',
-        otherDetails: 'Placeholder details',
+        dateOfBirth: 'N/A',
+        otherDetails: otherDetails || "No content found in PDF.",
       };
     });
-    
-    // Simulate processing time
-    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    setExtractedData(data);
-    setCredits(prev => prev - files.length);
-    setFiles([]); // Clear files after processing
-    setIsProcessing(false);
+    try {
+      const data = await Promise.all(dataPromises);
+      setExtractedData(data);
+      setCredits(prev => prev - files.length);
+      setFiles([]); // Clear files after processing
+    } catch (e) {
+      setError('An error occurred during processing.');
+      toast({
+        variant: 'destructive',
+        title: 'Processing Error',
+        description: 'Could not process all files.',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleStartOver = () => {
@@ -114,7 +140,7 @@ export function IdBatcher() {
               ID Card Processing Made Easy
             </h1>
             <p className="text-center text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Upload ID images (PNG, JPG) to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
+              Upload ID images (PNG, JPG) or PDFs to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
             </p>
             <Card className="mt-8 shadow-lg">
               <CardContent className="p-6">
@@ -136,7 +162,13 @@ export function IdBatcher() {
                   {files.map((fileWithPreview, index) => (
                     <li key={index} className="flex items-center justify-between p-3 bg-card rounded-lg shadow-sm">
                       <div className="flex items-center gap-4">
-                        <img src={fileWithPreview.preview} alt={fileWithPreview.file.name} className="w-16 h-10 object-cover rounded-md" />
+                        {fileWithPreview.file.type.startsWith('image/') ? (
+                           <img src={fileWithPreview.preview} alt={fileWithPreview.file.name} className="w-16 h-10 object-cover rounded-md" />
+                        ) : (
+                          <div className="w-16 h-10 flex items-center justify-center bg-muted rounded-md">
+                            <FileUp className="w-6 h-6 text-muted-foreground" />
+                          </div>
+                        )}
                         <div>
                           <p className="font-medium text-sm">{fileWithPreview.file.name}</p>
                           <p className="text-xs text-muted-foreground">{formatBytes(fileWithPreview.file.size)}</p>
@@ -161,7 +193,7 @@ export function IdBatcher() {
                 ) : (
                   <>
                     <ScanLine />
-                    Process {files.length > 0 ? `${files.length} ID(s)` : 'IDs'}
+                    Process {files.length > 0 ? `${files.length} file(s)` : 'Files'}
                   </>
                 )}
               </Button>

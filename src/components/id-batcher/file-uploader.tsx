@@ -21,6 +21,7 @@ export function FileUploader({ onFilesAdded, disabled }: FileUploaderProps) {
       'image/png': ['.png'],
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/webp': ['.webp'],
+      'application/pdf': ['.pdf'],
     },
     disabled
   });
@@ -42,8 +43,8 @@ export function FileUploader({ onFilesAdded, disabled }: FileUploaderProps) {
           <p className="font-bold text-lg text-primary">Drop the files here ...</p>
         ) : (
           <div>
-            <p className="font-bold text-lg">Drag & drop ID images here, or click to select</p>
-            <p className="text-sm mt-1">Supported formats: PNG, JPG, WEBP</p>
+            <p className="font-bold text-lg">Drag & drop ID images or PDFs here, or click to select</p>
+            <p className="text-sm mt-1">Supported formats: PNG, JPG, WEBP, PDF</p>
           </div>
         )}
       </div>
