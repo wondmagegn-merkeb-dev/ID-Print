@@ -4,7 +4,7 @@ import { AppLogo } from '@/components/icons';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, CheckCircle } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 function WelcomeHeader() {
   return (
@@ -18,7 +18,7 @@ function WelcomeHeader() {
             </h1>
           </Link>
         </div>
-        <div className="flex items-center p-1 rounded-full border bg-card shadow-sm">
+        <div className="flex items-center p-1 rounded-full border bg-background shadow-sm">
           <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
             <Link href="/auth/signin">Sign In</Link>
           </Button>
@@ -42,7 +42,7 @@ export function WelcomePage() {
                 <div className="inline-block bg-primary/10 text-primary font-semibold px-4 py-1 rounded-full text-sm">
                 Effortless ID Processing
                 </div>
-                <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold font-headline text-foreground leading-tight">
+                <h1 className="text-4xl sm:text-5xl font-extrabold font-headline text-foreground leading-tight">
                 Automate Your ID Card Workflow
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-xl">
