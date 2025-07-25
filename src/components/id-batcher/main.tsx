@@ -14,7 +14,7 @@ import React, { useState } from 'react';
 import { FileUploader } from './file-uploader';
 import { Header } from './header';
 import { ImpositionPreview, IdData } from './imposition-preview';
-import { PDFExtract } from 'pdf.js-extract';
+import { extractTextFromPdf } from '@/app/actions';
 
 type FileWithPreview = {
   file: File;
@@ -68,8 +68,6 @@ export function IdBatcher() {
     setIsProcessing(true);
     setError(null);
 
-    const pdfExtractor = new PDFExtract();
-
     const dataPromises = files.map(async (fileWithPreview) => {
       const { file } = fileWithPreview;
       const fileName = file.name;
@@ -80,12 +78,11 @@ export function IdBatcher() {
       if (file.type === 'application/pdf') {
         try {
           const buffer = await file.arrayBuffer();
-          const extracted = await pdfExtractor.extract(buffer, {});
-          otherDetails = extracted.pages.map(page => page.content.map(c => c.str).join(' ')).join('\n\n');
+          const data = await extractTextFromPdf(Buffer.from(buffer));
+          otherDetails = data;
         } catch (e) {
           console.error('Error extracting PDF:', e);
           otherDetails = 'Could not extract text from PDF.';
-          // Optionally, set an error state or toast here
         }
       }
 
