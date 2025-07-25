@@ -46,7 +46,7 @@ export function WelcomePage() {
                 Automate Your ID Card Workflow
                 </h1>
                 <p className="text-lg text-muted-foreground max-w-xl">
-                Tired of manually formatting ID cards? ID Batcher takes your individual ID images or PDFs and automatically arranges them onto A4 sheets, ready for printing.
+                Effortlessly convert your ID scans into organized documents. Upload your PDF or image files, and let ID Batcher format them into a professional A4 layout, ready for export.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <Button asChild size="lg" className="shadow-lg shadow-primary/20">
