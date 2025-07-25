@@ -11,9 +11,9 @@ import {
   XCircle,
 } from 'lucide-react';
 import React, { useState } from 'react';
-import { FileUploader } from './file-uploader';
-import { Header } from './header';
-import { ImpositionPreview, IdData } from './imposition-preview';
+import { FileUploader } from './id-batcher/file-uploader';
+import { Header } from './id-batcher/header';
+import { ImpositionPreview, IdData } from './id-batcher/imposition-preview';
 import { extractTextFromPdf } from '@/app/actions';
 
 type FileWithPreview = {

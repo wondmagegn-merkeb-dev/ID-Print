@@ -1,4 +1,4 @@
-import { IdBatcher } from '@/components/id-batcher/main';
+import { IdBatcher } from '@/components/id-batcher';
 
 export default function Home() {
   return (
