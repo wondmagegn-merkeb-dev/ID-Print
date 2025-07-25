@@ -12,11 +12,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  useFormField,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { Mail } from "lucide-react"
 import { useState } from "react"
+import { cn } from "@/lib/utils"
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -59,7 +61,7 @@ export function ForgotPasswordForm() {
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="your.email@example.com" {...field} className="pl-10" />
+                  <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", form.formState.errors.email && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />

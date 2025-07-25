@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast"
 import { User, Phone, Mail, Lock } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -67,7 +68,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="John Doe" {...field} className="pl-10" />
+                  <Input placeholder="John Doe" {...field} className={cn("pl-10", form.formState.errors.name && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />
@@ -83,7 +84,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="(123) 456-7890" {...field} className="pl-10" />
+                  <Input placeholder="(123) 456-7890" {...field} className={cn("pl-10", form.formState.errors.phone && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />
@@ -99,7 +100,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="your.email@example.com" {...field} className="pl-10" />
+                  <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", form.formState.errors.email && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />
@@ -115,7 +116,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" placeholder="••••••••" {...field} className="pl-10" />
+                  <Input type="password" placeholder="••••••••" {...field} className={cn("pl-10", form.formState.errors.password && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />

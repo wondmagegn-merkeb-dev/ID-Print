@@ -18,6 +18,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Lock } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import { cn } from "@/lib/utils"
 
 const formSchema = z.object({
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
@@ -66,7 +67,7 @@ export function ResetPasswordForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" placeholder="••••••••" {...field} className="pl-10" />
+                  <Input type="password" placeholder="••••••••" {...field} className={cn("pl-10", form.formState.errors.password && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />
@@ -82,7 +83,7 @@ export function ResetPasswordForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type="password" placeholder="••••••••" {...field} className="pl-10" />
+                  <Input type="password" placeholder="••••••••" {...field} className={cn("pl-10", form.formState.errors.confirmPassword && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />
