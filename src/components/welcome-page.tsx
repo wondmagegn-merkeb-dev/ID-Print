@@ -72,7 +72,7 @@ export function WelcomePage() {
                 alt="ID Batcher workflow illustration"
                 width={600}
                 height={400}
-                className="rounded-2xl shadow-2xl relative"
+                className="rounded-2xl shadow-2xl relative transition-transform duration-500 ease-in-out hover:scale-105"
                 />
             </div>
             </div>
