@@ -21,7 +21,17 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     // This is to address an issue with pdf.js-extract trying to require 'canvas'
     // which is a server-side dependency. We can safely ignore it for the client-side build.
-    config.resolve.alias.canvas = false;
+    if (!isServer) {
+      config.resolve.alias.canvas = false;
+    }
+
+    // This is to address an issue with pdf.js-extract trying to require 'fs'
+    // which is a server-side dependency. We can safely ignore it for the client-side build.
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      fs: false,
+    };
+    
     return config;
   },
 };
