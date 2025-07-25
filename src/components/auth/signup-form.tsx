@@ -25,7 +25,11 @@ const formSchema = z.object({
   phone: z.string().min(10, { message: "Please enter a valid phone number." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
-})
+  confirmPassword: z.string()
+}).refine(data => data.password === data.confirmPassword, {
+  message: "Passwords do not match.",
+  path: ["confirmPassword"],
+});
 
 export function SignUpForm() {
   const { toast } = useToast()
@@ -39,6 +43,7 @@ export function SignUpForm() {
       phone: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   })
 
@@ -117,6 +122,22 @@ export function SignUpForm() {
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input type="password" placeholder="••••••••" {...field} className={cn("pl-10", form.formState.errors.password && "border-destructive ring-2 ring-destructive/20")} />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="confirmPassword"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Confirm Password</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input type="password" placeholder="••••••••" {...field} className={cn("pl-10", form.formState.errors.confirmPassword && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
               <FormMessage />
