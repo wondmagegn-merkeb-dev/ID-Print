@@ -18,11 +18,11 @@ function WelcomeHeader() {
             </h1>
           </Link>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" asChild>
+        <div className="flex items-center p-1 rounded-full border bg-card shadow-sm">
+          <Button variant="ghost" size="sm" className="rounded-full" asChild>
             <Link href="/auth/signin">Sign In</Link>
           </Button>
-          <Button asChild>
+          <Button size="sm" className="rounded-full" asChild>
             <Link href="/auth/signup">Sign Up</Link>
           </Button>
         </div>

@@ -4,6 +4,7 @@ import { AppLogo } from '@/components/icons';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { User } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 type HeaderProps = {
   credits: number;
@@ -34,14 +35,14 @@ export function Header({ credits }: HeaderProps) {
               <User />
             </Button>
           ) : (
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" asChild>
-                <Link href="/auth/signin">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/auth/signup">Sign Up</Link>
-              </Button>
-            </div>
+             <div className="flex items-center p-1 rounded-full border bg-background shadow-sm">
+                <Button variant="ghost" size="sm" className="rounded-full" asChild>
+                  <Link href="/auth/signin">Sign In</Link>
+                </Button>
+                <Button size="sm" className="rounded-full" asChild>
+                  <Link href="/auth/signup">Sign Up</Link>
+                </Button>
+              </div>
           )}
         </div>
       </div>
