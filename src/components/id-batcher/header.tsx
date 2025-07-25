@@ -5,6 +5,7 @@ import { Button } from '../ui/button';
 import Link from 'next/link';
 import { User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { ThemeToggle } from '../theme-toggle';
 
 type HeaderProps = {
   credits: number;
@@ -26,24 +27,25 @@ export function Header({ credits }: HeaderProps) {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-sm font-medium text-foreground">Usage Credits</div>
-            <div className="text-xs text-muted-foreground">{credits} remaining</div>
-          </div>
-          {isLoggedIn ? (
-            <Button variant="ghost" size="icon">
-              <User />
-            </Button>
-          ) : (
-             <div className="flex items-center p-1 rounded-full border bg-background shadow-sm">
-                <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
-                  <Link href="/auth/signin">Sign In</Link>
+            <ThemeToggle />
+            <div className="text-right">
+                <div className="text-sm font-medium text-foreground">Usage Credits</div>
+                <div className="text-xs text-muted-foreground">{credits} remaining</div>
+            </div>
+            {isLoggedIn ? (
+                <Button variant="ghost" size="icon">
+                <User />
                 </Button>
-                <Button size="sm" className="rounded-full" asChild>
-                  <Link href="/auth/signup">Sign Up</Link>
-                </Button>
-              </div>
-          )}
+            ) : (
+                <div className="flex items-center p-1 rounded-full border bg-background shadow-sm">
+                    <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
+                    <Link href="/auth/signin">Sign In</Link>
+                    </Button>
+                    <Button size="sm" className="rounded-full" asChild>
+                    <Link href="/auth/signup">Sign Up</Link>
+                    </Button>
+                </div>
+            )}
         </div>
       </div>
     </header>

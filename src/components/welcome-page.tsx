@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
+import { ThemeToggle } from './theme-toggle';
 
 function WelcomeHeader() {
   return (
@@ -18,13 +19,16 @@ function WelcomeHeader() {
             </h1>
           </Link>
         </div>
-        <div className="flex items-center p-1 rounded-full border bg-background shadow-sm">
-          <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
-            <Link href="/auth/signin">Sign In</Link>
-          </Button>
-          <Button size="sm" className="rounded-full" asChild>
-            <Link href="/auth/signup">Sign Up</Link>
-          </Button>
+        <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <div className="flex items-center p-1 rounded-full border bg-background shadow-sm">
+                <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
+                <Link href="/auth/signin">Sign In</Link>
+                </Button>
+                <Button size="sm" className="rounded-full" asChild>
+                <Link href="/auth/signup">Sign Up</Link>
+                </Button>
+            </div>
         </div>
       </div>
     </header>
