@@ -16,7 +16,7 @@ export function MergedPdfPreview({ pdfBase64, onGenerate, onStartOver, isProcess
   const pdfDataUrl = `data:application/pdf;base64,${pdfBase64}`;
 
   return (
-    <div>
+    <div className="flex flex-col h-[calc(100vh-150px)]">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
           <h1 className="font-headline text-4xl font-bold text-primary/90">Step 2: Review Merged PDF</h1>
@@ -43,8 +43,8 @@ export function MergedPdfPreview({ pdfBase64, onGenerate, onStartOver, isProcess
           </Button>
         </div>
       </div>
-      <div className="bg-white shadow-lg rounded-lg p-4">
-        <div className="aspect-[8.5/11] w-full max-w-4xl mx-auto">
+      <div className="bg-white shadow-lg rounded-lg p-4 flex-1">
+        <div className="w-full h-full max-w-4xl mx-auto">
           <iframe
             src={pdfDataUrl}
             className="w-full h-full border rounded-md"
