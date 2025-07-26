@@ -19,9 +19,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 
 type HeaderProps = {
   credits: number;
+  onCreditsChanged: (credits: number) => void;
 };
 
-export function Header({ credits }: HeaderProps) {
+export function Header({ credits, onCreditsChanged }: HeaderProps) {
   // Mock user state
   const isLoggedIn = true;
 
@@ -29,7 +30,7 @@ export function Header({ credits }: HeaderProps) {
     <header className="bg-card border-b shadow-sm sticky top-0 z-40">
       <div className="px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-3">
+          <Link href="/dashboard" className="flex items-center gap-3">
             <AppLogo className="h-8 w-8 text-primary" />
             <h1 className="text-2xl font-bold text-foreground font-headline">
               ID Batcher
@@ -62,15 +63,19 @@ export function Header({ credits }: HeaderProps) {
                      </div>
                    </DropdownMenuLabel>
                    <DropdownMenuSeparator />
-                   <DropdownMenuItem>
-                     <User className="mr-2 h-4 w-4" />
-                     <span>Profile</span>
-                   </DropdownMenuItem>
+                   <Link href="/dashboard/profile" passHref>
+                    <DropdownMenuItem>
+                      <User className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                   </Link>
                    <DropdownMenuSeparator />
-                   <DropdownMenuItem>
-                     <LogOut className="mr-2 h-4 w-4" />
-                     <Link href="/auth/signin">Sign Out</Link>
-                   </DropdownMenuItem>
+                   <Link href="/auth/signin" passHref>
+                    <DropdownMenuItem>
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                    </DropdownMenuItem>
+                   </Link>
                  </DropdownMenuContent>
                </DropdownMenu>
             ) : (

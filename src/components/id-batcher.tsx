@@ -1,3 +1,4 @@
+
 "use client";
 
 import { Button } from '@/components/ui/button';
@@ -12,7 +13,6 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { FileUploader } from './id-batcher/file-uploader';
-import { Header } from './id-batcher/header';
 import { ImpositionPreview, IdData } from './id-batcher/imposition-preview';
 import { extractTextFromPdf } from '@/app/actions';
 
@@ -36,7 +36,6 @@ export function IdBatcher() {
   const [extractedData, setExtractedData] = useState<IdData[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [credits, setCredits] = useState(100);
   const { toast } = useToast();
 
   const handleFiles = (newFiles: File[]) => {
@@ -62,15 +61,6 @@ export function IdBatcher() {
         variant: 'destructive',
         title: 'No files selected',
         description: 'Please upload at least one ID image or PDF to process.',
-      });
-      return;
-    }
-
-    if (files.length > credits) {
-      toast({
-        variant: 'destructive',
-        title: 'Insufficient Credits',
-        description: `You need ${files.length} credits but only have ${credits}.`,
       });
       return;
     }
@@ -107,7 +97,7 @@ export function IdBatcher() {
     try {
       const data = await Promise.all(dataPromises);
       setExtractedData(data);
-      setCredits(prev => prev - files.length);
+      // setCredits(prev => prev - files.length); // Credits are managed in layout
       setFiles([]); // Clear files after processing
     } catch (e) {
       setError('An error occurred during processing.');
@@ -137,9 +127,7 @@ export function IdBatcher() {
   };
 
   return (
-    <div className="flex flex-col h-full bg-background">
-      <Header credits={credits} />
-      <main className="flex-1 container mx-auto px-4 py-8">
+    <>
         {extractedData.length > 0 ? (
           <ImpositionPreview data={extractedData} onStartOver={handleStartOver} />
         ) : (
@@ -208,7 +196,6 @@ export function IdBatcher() {
             </div>
           </div>
         )}
-      </main>
-    </div>
+      </>
   );
 }
