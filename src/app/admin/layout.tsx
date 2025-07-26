@@ -8,12 +8,13 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarInset,
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarProvider,
+  SidebarSeparator,
   SidebarTrigger,
+  SidebarInset,
 } from '@/components/ui/sidebar';
 import { Home, Package, Settings, Users } from 'lucide-react';
 import Link from 'next/link';
@@ -33,11 +34,11 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const activeItem = menuItems.find(item => pathname.startsWith(item.href));
+  const activeItem = menuItems.find(item => pathname === item.href);
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar side="left" variant="inset" collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2">
             <AppLogo className="h-7 w-7 text-primary" />
@@ -48,14 +49,15 @@ export default function AdminLayout({
           <SidebarMenu>
             {menuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton href={item.href} isActive={pathname === item.href}>
+                    <SidebarMenuButton href={item.href} isActive={pathname === item.href} tooltip={item.label}>
                         <item.icon />
-                        {item.label}
+                        <span>{item.label}</span>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             ))}
           </SidebarMenu>
         </SidebarContent>
+        <SidebarSeparator />
         <SidebarFooter>
             <div className="flex items-center gap-2 p-2">
                 <Avatar className="h-8 w-8">
@@ -72,7 +74,7 @@ export default function AdminLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
+        <header className="flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-6 sticky top-0 z-30">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
                 <h1 className="text-lg font-semibold">{activeItem?.label || 'Admin'}</h1>
