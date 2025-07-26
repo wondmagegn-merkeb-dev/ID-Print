@@ -7,6 +7,7 @@ import { IdCardPreview } from './id-card-preview';
 import React from 'react';
 import type { IdData } from '@/ai/flow';
 import { useToast } from '@/hooks/use-toast';
+import { generateExportHtml } from '@/lib/export';
 
 type ImpositionPreviewProps = {
   data: IdData[];
@@ -55,7 +56,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
     return cardData.slice(start, end);
   });
   
-  const generateExportHtml = () => {
+  const handleExport = () => {
     // We only want to export the real data, not the placeholders.
     const exportableCardData = textChunks.map((chunk, index) => ({
         fileName: `ID ${index + 1}`,
@@ -64,72 +65,17 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
         dateOfBirth: 'N/A',
         otherDetails: chunk,
     }));
-    const exportableNumPages = Math.ceil(exportableCardData.length / cardsPerPage);
-    const exportablePages = Array.from({ length: exportableNumPages }, (_, i) => {
-        const start = i * cardsPerPage;
-        const end = start + cardsPerPage;
-        return exportableCardData.slice(start, end);
-    });
+    
+    if (exportableCardData.length === 0) {
+        toast({
+            variant: "destructive",
+            title: "No Data to Export",
+            description: "There is no extracted content to export.",
+        });
+        return;
+    }
 
-    let html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-        <meta charset="UTF-8">
-        <title>ID Batcher Export</title>
-        <style>
-          @page { size: A4 portrait; margin: 1cm; }
-          body { font-family: sans-serif; }
-          .page { width: 190mm; height: 277mm; page-break-after: always; display: flex; flex-direction: column; }
-          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; flex-grow: 1; }
-          .card-container { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; overflow: hidden; display: flex; flex-direction: column; height: 54mm; width: 85.6mm; }
-          .card-header { display: flex; justify-content: space-between; align-items: center; }
-          .card-title { font-weight: bold; font-size: 10px; text-transform: uppercase; color: #1e3a8a; }
-          .card-content { margin-top: 8px; font-size: 10px; flex-grow: 1; overflow: hidden; }
-          .detail-label { font-size: 8px; color: #6b7280; text-transform: uppercase; font-weight: 600; }
-          .detail-value { font-family: monospace; font-size: 10px; font-weight: bold; white-space: pre-wrap; word-wrap: break-word; }
-          .card-footer { height: 4px; background: linear-gradient(to right, #3b82f6, #8b5cf6); border-radius: 9999px; margin-top: auto; }
-          h2 { font-family: 'Space Grotesk', sans-serif; text-align: center; }
-        </style>
-      </head>
-      <body>
-    `;
-
-    exportablePages.forEach((pageData, pageIndex) => {
-      html += `<div class="page"><h2>Page ${pageIndex + 1}</h2><div class="grid">`;
-      for (let i = 0; i < cardsPerPage; i++) {
-        const cardDataItem = pageData[i];
-        if (cardDataItem) {
-          const escapedText = (cardDataItem.otherDetails || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          // Front
-          html += `<div class="card-container">
-            <div class="card-header"><span class="card-title">PDF Document (Front)</span></div>
-            <div class="card-content">
-              <div><p class="detail-label">File Name</p><p class="detail-value" style="word-break: break-all;">${cardDataItem.name || 'N/A'}</p></div>
-            </div>
-            <div class="card-footer"></div>
-          </div>`;
-          // Back
-          html += `<div class="card-container">
-            <div class="card-header"><span class="card-title">Extracted Text (Back)</span></div>
-            <div class="card-content">
-              <div><p class="detail-label">Content</p><p class="detail-value">${escapedText || 'N/A'}</p></div>
-            </div>
-            <div class="card-footer"></div>
-          </div>`;
-        } else {
-          html += '<div></div><div></div>'; // empty cells for both columns
-        }
-      }
-      html += `</div></div>`;
-    });
-
-    html += '</body></html>';
-    return html;
-  };
-
-  const handleExport = () => {
-    const htmlContent = generateExportHtml();
+    const htmlContent = generateExportHtml(exportableCardData);
     const blob = new Blob([htmlContent], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -142,7 +88,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
   };
 
   const handleSave = () => {
-    if (data.length === 0) {
+    if (data.length === 0 || !data[0]?.rawText) {
       toast({
         variant: 'destructive',
         title: 'Cannot Save Empty Batch',
@@ -154,7 +100,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
     try {
       const savedSessions = JSON.parse(localStorage.getItem('id-batcher-sessions') || '[]');
       const newSession = {
-        id: new Date().toISOString(),
+        id: new Date().toISOString().slice(11, 23).replace('T', ''), // a short, unique ID
         timestamp: Date.now(),
         cardCount: textChunks.length, // Only count real cards
         data,
@@ -179,7 +125,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
 
   return (
     <div className="flex flex-col h-[calc(100vh-90px)]">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
+       <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
         <div>
           <h1 className="font-headline text-4xl font-bold text-primary/90">Step 3: Preview & Export</h1>
           <p className="text-muted-foreground mt-1">
@@ -198,8 +144,8 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
           </Button>
         </div>
       </div>
-      <div className="flex-1 overflow-auto p-4 bg-muted/30 rounded-lg">
-        <div id="preview-content" className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
+      <div className="flex-1 overflow-auto p-4 bg-muted/30 rounded-lg flex justify-center items-start">
+        <div id="preview-content" className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center w-full max-w-5xl">
             {pages.map((pageData, pageIndex) => (
             <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg w-full max-w-[210mm]">
                 <h2 className="text-center font-bold mb-4 text-gray-600">
