@@ -16,7 +16,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Home, Package, Settings, Users, User } from 'lucide-react';
+import { Home, Package, Settings, Users, User, CreditCard, Repeat } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
@@ -24,6 +24,8 @@ import * as React from 'react';
 const menuItems = [
     { href: "/admin/dashboard", icon: Home, label: "Dashboard" },
     { href: "/admin/users", icon: Users, label: "Users" },
+    { href: "/admin/subscriptions", icon: Repeat, label: "Subscriptions" },
+    { href: "/admin/payments", icon: CreditCard, label: "Payments" },
     { href: "/admin/packages", icon: Package, label: "Packages" },
     { href: "/admin/settings", icon: Settings, label: "Settings" },
 ]
