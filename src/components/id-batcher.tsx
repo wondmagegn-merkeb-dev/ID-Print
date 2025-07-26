@@ -136,7 +136,7 @@ export function IdBatcher() {
               ID Card Processing Made Easy
             </h1>
             <p className="text-center text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Upload ID PDFs to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
+              Upload your ID PDFs to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
             </p>
             <Card className="mt-8 shadow-lg">
               <CardContent className="p-6">
@@ -156,18 +156,18 @@ export function IdBatcher() {
                 <h2 className="text-xl font-semibold font-headline">Ready to Process</h2>
                 <ul className="mt-4 space-y-3">
                   {files.map((fileWithPreview, index) => (
-                    <li key={index} className="flex items-center justify-between p-3 bg-card rounded-lg shadow-sm">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-10 flex items-center justify-center bg-muted rounded-md">
+                    <li key={index} className="flex items-center justify-between p-3 bg-card rounded-lg shadow-sm border animate-in fade-in slide-in-from-bottom-2">
+                      <div className="flex items-center gap-4 overflow-hidden">
+                        <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-md shrink-0">
                           <FileText className="w-6 h-6 text-muted-foreground" />
                         </div>
-                        <div>
-                          <p className="font-medium text-sm">{fileWithPreview.file.name}</p>
+                        <div className="overflow-hidden">
+                          <p className="font-medium text-sm truncate">{fileWithPreview.file.name}</p>
                           <p className="text-xs text-muted-foreground">{formatBytes(fileWithPreview.file.size)}</p>
                         </div>
                       </div>
                       <Button variant="ghost" size="icon" onClick={() => removeFile(index)} disabled={isProcessing}>
-                        <Trash2 className="w-4 h-4" />
+                        <Trash2 className="w-4 h-4 text-destructive" />
                       </Button>
                     </li>
                   ))}
