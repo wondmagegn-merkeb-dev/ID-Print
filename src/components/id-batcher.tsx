@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import {
-  FileUp,
+  FileText,
   LoaderCircle,
   ScanLine,
   Trash2,
@@ -18,7 +18,7 @@ import { extractTextFromPdf } from '@/app/actions';
 
 type FileWithPreview = {
   file: File;
-  preview: string;
+  preview: string; // This is kept for URL.createObjectURL, but won't be an image.
 };
 
 function arrayBufferToBase64(buffer: ArrayBuffer) {
@@ -60,7 +60,7 @@ export function IdBatcher() {
       toast({
         variant: 'destructive',
         title: 'No files selected',
-        description: 'Please upload at least one ID image or PDF to process.',
+        description: 'Please upload at least one PDF to process.',
       });
       return;
     }
@@ -136,7 +136,7 @@ export function IdBatcher() {
               ID Card Processing Made Easy
             </h1>
             <p className="text-center text-muted-foreground mt-4 max-w-2xl mx-auto">
-              Upload ID images (PNG, JPG) or PDFs to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
+              Upload ID PDFs to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
             </p>
             <Card className="mt-8 shadow-lg">
               <CardContent className="p-6">
@@ -158,13 +158,9 @@ export function IdBatcher() {
                   {files.map((fileWithPreview, index) => (
                     <li key={index} className="flex items-center justify-between p-3 bg-card rounded-lg shadow-sm">
                       <div className="flex items-center gap-4">
-                        {fileWithPreview.file.type.startsWith('image/') ? (
-                           <img src={fileWithPreview.preview} alt={fileWithPreview.file.name} className="w-16 h-10 object-cover rounded-md" />
-                        ) : (
-                          <div className="w-16 h-10 flex items-center justify-center bg-muted rounded-md">
-                            <FileUp className="w-6 h-6 text-muted-foreground" />
-                          </div>
-                        )}
+                        <div className="w-16 h-10 flex items-center justify-center bg-muted rounded-md">
+                          <FileText className="w-6 h-6 text-muted-foreground" />
+                        </div>
                         <div>
                           <p className="font-medium text-sm">{fileWithPreview.file.name}</p>
                           <p className="text-xs text-muted-foreground">{formatBytes(fileWithPreview.file.size)}</p>

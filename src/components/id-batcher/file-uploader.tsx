@@ -1,7 +1,7 @@
 "use client";
 
 import { FileUp } from 'lucide-react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { cn } from '@/lib/utils';
 
@@ -18,9 +18,6 @@ export function FileUploader({ onFilesAdded, disabled }: FileUploaderProps) {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      'image/png': ['.png'],
-      'image/jpeg': ['.jpg', '.jpeg'],
-      'image/webp': ['.webp'],
       'application/pdf': ['.pdf'],
     },
     disabled
@@ -40,11 +37,11 @@ export function FileUploader({ onFilesAdded, disabled }: FileUploaderProps) {
       <div className="flex flex-col items-center gap-4 text-muted-foreground">
         <FileUp className="w-12 h-12 text-primary" />
         {isDragActive ? (
-          <p className="font-bold text-lg text-primary">Drop the files here ...</p>
+          <p className="font-bold text-lg text-primary">Drop the PDFs here ...</p>
         ) : (
           <div>
-            <p className="font-bold text-lg">Drag & drop ID images or PDFs here, or click to select</p>
-            <p className="text-sm mt-1">Supported formats: PNG, JPG, WEBP, PDF</p>
+            <p className="font-bold text-lg">Drag & drop your ID PDFs here, or click to select</p>
+            <p className="text-sm mt-1">Supported format: PDF</p>
           </div>
         )}
       </div>
