@@ -9,6 +9,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { MoreHorizontal, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState } from 'react';
+import Link from 'next/link';
 
 const initialUsers = [
     {
@@ -117,7 +118,6 @@ export default function AdminUsersPage() {
     }
   }
   
-  const handleAdd = () => alert('This would open a dialog to add a new user.');
   const handleEdit = (userId: string) => alert(`This would open a dialog to edit user ${userId}.`);
   const viewDetails = (userId: string) => alert(`This would show more details for user ${userId}.`);
 
@@ -131,9 +131,11 @@ export default function AdminUsersPage() {
                 <CardTitle>Manage Users</CardTitle>
                 <CardDescription>A list of all registered users.</CardDescription>
             </div>
-            <Button onClick={handleAdd}>
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add New User
+            <Button asChild>
+                <Link href="/admin/users/add">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add New User
+                </Link>
             </Button>
           </div>
         </CardHeader>
