@@ -10,7 +10,7 @@ import { ThemeToggle } from './theme-toggle';
 function WelcomeHeader() {
   return (
     <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
-      <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div className="px-4 py-3 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-3">
             <AppLogo className="h-8 w-8 text-primary" />
@@ -55,7 +55,8 @@ export function WelcomePage() {
                 <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-in fade-in slide-in-from-bottom-7 duration-1000 delay-300">
                 <Button asChild size="lg" className="shadow-lg shadow-primary/20">
                     <Link href="/auth/signup">
-                    Get Started <ArrowRight className="ml-2" />
+                    Get Started for Free
+                    <ArrowRight className="ml-2" />
                     </Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
@@ -67,12 +68,12 @@ export function WelcomePage() {
             </div>
             <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
-                <div className='w-[600px] h-[400px] item-center justify-center relative rounded-2xl shadow-2xl bg-transparen transition-transform duration-500 ease-in-out hover:scale-105'>
+                <div className='w-full h-auto aspect-[44/40] item-center justify-center relative rounded-2xl bg-transparent transition-transform duration-500 ease-in-out hover:scale-105'>
                   <Image
                     src="/hero-fyda.png"
                     alt="ID Batcher workflow illustration"
                     fill
-                    className="object-contain rounded-2xl rounded-2xl shadow-2xl"
+                    className="object-contain rounded-2xl shadow-2xl"
                   />
                 </div>
             </div>
