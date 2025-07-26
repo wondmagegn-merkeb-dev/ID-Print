@@ -23,8 +23,10 @@ type HeaderProps = {
 };
 
 export function Header({ credits, onCreditsChanged }: HeaderProps) {
-  // Mock user state
+  // Mock user state and admin check
   const isLoggedIn = true;
+  const userEmail = "user@example.com"; // In a real app, this would come from auth state
+  const isAdmin = userEmail === 'admin@example.com';
 
   return (
     <header className="bg-card border-b shadow-sm sticky top-0 z-40">
@@ -41,7 +43,7 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
             <ThemeToggle />
             <div className="text-right">
                 <div className="text-sm font-medium text-foreground">Usage Credits</div>
-                <div className="text-xs text-muted-foreground">{credits} remaining</div>
+                <div className="text-xs text-muted-foreground">{isAdmin ? "Unlimited" : `${credits} remaining`}</div>
             </div>
             {isLoggedIn ? (
                  <DropdownMenu>
@@ -56,9 +58,9 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
                  <DropdownMenuContent className="w-56" align="end" forceMount>
                    <DropdownMenuLabel className="font-normal">
                      <div className="flex flex-col space-y-1">
-                       <p className="text-sm font-medium leading-none">User</p>
+                       <p className="text-sm font-medium leading-none">{isAdmin ? "Admin User" : "User"}</p>
                        <p className="text-xs leading-none text-muted-foreground">
-                         user@example.com
+                         {isAdmin ? 'admin@example.com' : 'user@example.com'}
                        </p>
                      </div>
                    </DropdownMenuLabel>

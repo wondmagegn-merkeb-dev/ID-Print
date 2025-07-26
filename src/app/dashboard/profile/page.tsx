@@ -7,13 +7,18 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ExternalLink } from "lucide-react";
+import { ChevronLeft, ExternalLink, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 
 export default function ProfilePage() {
   const router = useRouter();
+  
+  // Mock user and admin state
+  const userEmail = "user@example.com"; // In a real app, this would come from auth state
+  const isAdmin = userEmail === "admin@example.com";
+
   const creditsUsed = 1250;
   const creditsTotal = 2500;
   const creditsPercentage = (creditsUsed / creditsTotal) * 100;
@@ -45,17 +50,17 @@ export default function ProfilePage() {
               <div className="flex items-center space-x-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" />
-                  <AvatarFallback>U</AvatarFallback>
+                  <AvatarFallback>{isAdmin ? 'A' : 'U'}</AvatarFallback>
                 </Avatar>
                 <Button variant="outline">Change Photo</Button>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="name">Full Name</Label>
-                <Input id="name" defaultValue="User" />
+                <Input id="name" defaultValue={isAdmin ? "Admin User" : "User"} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" defaultValue="user@example.com" disabled />
+                <Input id="email" type="email" defaultValue={isAdmin ? "admin@example.com" : "user@example.com"} disabled />
               </div>
             </CardContent>
             <CardFooter className="flex justify-end">
@@ -95,24 +100,35 @@ export default function ProfilePage() {
                     <CardDescription>Your current plan and usage.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div>
-                        <div className="flex justify-between items-baseline">
-                            <h3 className="text-lg font-bold text-primary">Pro Plan</h3>
-                            <p className="text-lg font-semibold">$29<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                    {isAdmin ? (
+                        <div>
+                            <div className="flex justify-between items-baseline">
+                                <h3 className="text-lg font-bold text-primary flex items-center gap-2"><Shield /> Admin Plan</h3>
+                            </div>
+                            <p className="text-sm text-muted-foreground">You have unlimited access to all features.</p>
                         </div>
-                        <p className="text-sm text-muted-foreground">Your plan renews on July 1, 2024.</p>
-                    </div>
-                    <Separator />
-                    <div>
-                        <Label className="text-sm font-medium">Usage Credits</Label>
-                        <Progress value={creditsPercentage} className="mt-2 h-2" />
-                        <p className="text-sm text-muted-foreground mt-2">{creditsUsed} of {creditsTotal} credits used.</p>
-                    </div>
+                    ) : (
+                        <>
+                            <div>
+                                <div className="flex justify-between items-baseline">
+                                    <h3 className="text-lg font-bold text-primary">Pro Plan</h3>
+                                    <p className="text-lg font-semibold">$29<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                                </div>
+                                <p className="text-sm text-muted-foreground">Your plan renews on July 1, 2024.</p>
+                            </div>
+                            <Separator />
+                            <div>
+                                <Label className="text-sm font-medium">Usage Credits</Label>
+                                <Progress value={creditsPercentage} className="mt-2 h-2" />
+                                <p className="text-sm text-muted-foreground mt-2">{creditsUsed} of {creditsTotal} credits used.</p>
+                            </div>
+                        </>
+                    )}
                 </CardContent>
                 <CardFooter>
                     <Button variant="outline" className="w-full" asChild>
                         <Link href="/dashboard/packages">
-                            Manage Subscription
+                            {isAdmin ? 'View All Packages' : 'Manage Subscription'}
                             <ExternalLink className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
