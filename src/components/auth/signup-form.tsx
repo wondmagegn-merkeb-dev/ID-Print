@@ -1,3 +1,4 @@
+
 "use client"
 
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -23,8 +24,8 @@ import { cn } from "@/lib/utils"
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   phone: z.string()
-    .min(1, { message: "Please enter your phone number." })
-    .regex(/^\+251[79]\d{8}$/, { message: "Phone must be a valid Ethiopian number (+2519... or +2517...)." }),
+    .length(9, { message: "Phone number must be exactly 9 digits." })
+    .regex(/^[79]\d{8}$/, { message: "Phone number must start with 7 or 9." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string()
@@ -44,7 +45,7 @@ export function SignUpForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      phone: "+251",
+      phone: "",
       email: "",
       password: "",
       confirmPassword: "",
@@ -118,9 +119,10 @@ export function SignUpForm() {
             <FormItem>
               <FormLabel>Phone Number</FormLabel>
               <FormControl>
-                <div className="relative">
+                <div className="relative flex items-center">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="+251..." {...field} className={cn("pl-10", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} />
+                  <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pr-2 border-r border-input">+251</span>
+                  <Input placeholder="912345678" {...field} className={cn("pl-24", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
                <FormMessage />

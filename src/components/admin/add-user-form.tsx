@@ -25,8 +25,8 @@ import { Checkbox } from "../ui/checkbox"
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
   phone: z.string()
-    .min(1, { message: "Please enter your phone number." })
-    .regex(/^\+251[79]\d{8}$/, { message: "Phone must be a valid Ethiopian number (+2519... or +2517...)." }),
+    .length(9, { message: "Phone number must be exactly 9 digits." })
+    .regex(/^[79]\d{8}$/, { message: "Phone number must start with 7 or 9." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   role: z.enum(["Admin", "User"], { required_error: "Please select a role." }),
   status: z.enum(["Active", "Inactive"], { required_error: "Please select a status." }),
@@ -44,7 +44,7 @@ export function AddUserForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      phone: "+251",
+      phone: "",
       email: "",
       role: "User",
       status: "Active",
@@ -65,13 +65,14 @@ export function AddUserForm() {
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
+    const fullPhoneNumber = `+251${values.phone}`;
     try {
       const response = await fetch('/api/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ ...values, phone: fullPhoneNumber }),
       });
 
       const result = await response.json();
@@ -155,9 +156,10 @@ export function AddUserForm() {
                         <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                            <div className="relative">
-                            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="+251..." {...field} className="pl-10" />
+                            <div className="relative flex items-center">
+                                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pr-2 border-r border-input">+251</span>
+                                <Input placeholder="912345678" {...field} className="pl-24" />
                             </div>
                         </FormControl>
                         </FormItem>
