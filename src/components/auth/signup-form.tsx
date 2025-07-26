@@ -22,7 +22,9 @@ import { cn } from "@/lib/utils"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  phone: z.string().min(10, { message: "Please enter a valid phone number." }),
+  phone: z.string()
+    .min(1, { message: "Please enter your phone number." })
+    .regex(/^\+251[79]\d{8}$/, { message: "Phone must be a valid Ethiopian number (+2519... or +2517...)." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string()
@@ -42,7 +44,7 @@ export function SignUpForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      phone: "",
+      phone: "+251",
       email: "",
       password: "",
       confirmPassword: "",
@@ -105,6 +107,7 @@ export function SignUpForm() {
                   <Input placeholder="John Doe" {...field} className={cn("pl-10", firstError === 'name' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />
@@ -117,9 +120,10 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="(123) 456-7890" {...field} className={cn("pl-10", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input placeholder="+251..." {...field} className={cn("pl-10", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
+               <FormMessage />
             </FormItem>
           )}
         />
@@ -135,6 +139,7 @@ export function SignUpForm() {
                   <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", firstError === 'email' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
+               <FormMessage />
             </FormItem>
           )}
         />
@@ -153,6 +158,7 @@ export function SignUpForm() {
                   </button>
                 </div>
               </FormControl>
+               <FormMessage />
             </FormItem>
           )}
         />

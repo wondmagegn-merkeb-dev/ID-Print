@@ -15,6 +15,8 @@ const initialUsers = [
       id: "usr_1",
       name: "John Doe",
       email: "john.d@example.com",
+      phone: "+251912345678",
+      role: "Admin",
       plan: "Pro",
       signupDate: "2023-10-26",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704a",
@@ -23,6 +25,8 @@ const initialUsers = [
       id: "usr_2",
       name: "Jane Smith",
       email: "jane.s@example.com",
+      phone: "+251711223344",
+      role: "User",
       plan: "Basic",
       signupDate: "2023-10-25",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704b",
@@ -31,6 +35,8 @@ const initialUsers = [
       id: "usr_3",
       name: "Sam Wilson",
       email: "sam.w@example.com",
+      phone: "+251922334455",
+      role: "User",
       plan: "Pro",
       signupDate: "2023-10-24",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704c",
@@ -39,6 +45,8 @@ const initialUsers = [
         id: "usr_4",
         name: "Alice Johnson",
         email: "alice.j@example.com",
+        phone: "+251933445566",
+        role: "User",
         plan: "Enterprise",
         signupDate: "2023-10-23",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
@@ -49,12 +57,14 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState(initialUsers);
 
   const handleDelete = (userId: string) => {
-    setUsers(users.filter(u => u.id !== userId));
+    if (window.confirm('Are you sure you want to delete this user?')) {
+      setUsers(users.filter(u => u.id !== userId));
+    }
   }
   
-  // Add/Edit functions would open a dialog/modal in a real app
   const handleAdd = () => alert('This would open a dialog to add a new user.');
   const handleEdit = (userId: string) => alert(`This would open a dialog to edit user ${userId}.`);
+  const viewDetails = (userId: string) => alert(`This would show more details for user ${userId}.`);
 
 
   return (
@@ -77,7 +87,8 @@ export default function AdminUsersPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>User</TableHead>
-                <TableHead>Email</TableHead>
+                <TableHead>Contact</TableHead>
+                <TableHead>Role</TableHead>
                 <TableHead>Plan</TableHead>
                 <TableHead>Sign-up Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
@@ -95,7 +106,11 @@ export default function AdminUsersPage() {
                         {user.name}
                     </div>
                   </TableCell>
-                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                      <div className="text-sm">{user.email}</div>
+                      <div className="text-xs text-muted-foreground">{user.phone}</div>
+                  </TableCell>
+                  <TableCell>{user.role}</TableCell>
                   <TableCell>
                       <Badge variant={user.plan === 'Pro' ? 'default' : user.plan === 'Enterprise' ? 'secondary' : 'outline'}>
                         {user.plan}
@@ -112,7 +127,7 @@ export default function AdminUsersPage() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEdit(user.id)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => viewDetails(user.id)}>View Details</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleDelete(user.id)} className="text-destructive">Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
