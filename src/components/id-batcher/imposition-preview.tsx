@@ -45,10 +45,10 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
         <meta charset="UTF-8">
         <title>ID Batcher Export</title>
         <style>
-          @page { size: A4 landscape; margin: 1cm; }
+          @page { size: A4 portrait; margin: 1cm; }
           body { font-family: sans-serif; }
-          .page { width: 277mm; height: 190mm; page-break-after: always; display: flex; flex-direction: column; }
-          .grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10mm; flex-grow: 1; }
+          .page { width: 190mm; height: 277mm; page-break-after: always; display: flex; flex-direction: column; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10mm; flex-grow: 1; }
           .card-container { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; overflow: hidden; display: flex; flex-direction: column; height: 54mm; width: 85.6mm; }
           .card-header { display: flex; justify-content: space-between; align-items: center; }
           .card-title { font-weight: bold; font-size: 10px; text-transform: uppercase; color: #1e3a8a; }
@@ -63,40 +63,29 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
     `;
 
     pages.forEach((pageData, pageIndex) => {
-      // Fronts page
-      html += `<div class="page"><h2>Page ${pageIndex * 2 + 1} - Fronts</h2><div class="grid">`;
-      for (let i = 0; i < 4; i++) {
+      html += `<div class="page"><h2>Page ${pageIndex + 1}</h2><div class="grid">`;
+      for (let i = 0; i < cardsPerPage; i++) {
         const cardDataItem = pageData[i];
         if (cardDataItem) {
+          const escapedText = (cardDataItem.otherDetails || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          // Front
           html += `<div class="card-container">
-            <div class="card-header"><span class="card-title">PDF Document</span></div>
+            <div class="card-header"><span class="card-title">PDF Document (Front)</span></div>
             <div class="card-content">
               <div><p class="detail-label">File Name</p><p class="detail-value" style="word-break: break-all;">${cardDataItem.name || 'N/A'}</p></div>
             </div>
             <div class="card-footer"></div>
           </div>`;
-        } else {
-          html += '<div></div>'; // empty cell
-        }
-      }
-      html += `</div></div>`;
-
-      // Backs page
-      html += `<div class="page"><h2>Page ${pageIndex * 2 + 2} - Backs</h2><div class="grid">`;
-      for (let i = 0; i < 4; i++) {
-        const cardDataItem = pageData[i];
-        if (cardDataItem) {
-          // Escape HTML characters from the raw text to prevent issues in the export
-          const escapedText = (cardDataItem.otherDetails || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          // Back
           html += `<div class="card-container">
-            <div class="card-header"><span class="card-title">Extracted Text</span></div>
+            <div class="card-header"><span class="card-title">Extracted Text (Back)</span></div>
             <div class="card-content">
               <div><p class="detail-label">Content</p><p class="detail-value">${escapedText || 'N/A'}</p></div>
             </div>
             <div class="card-footer"></div>
           </div>`;
         } else {
-          html += '<div></div>'; // empty cell
+          html += '<div></div><div></div>'; // empty cells for both columns
         }
       }
       html += `</div></div>`;
@@ -161,7 +150,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
         <div>
           <h1 className="font-headline text-4xl font-bold text-primary/90">Step 3: Preview & Export</h1>
           <p className="text-muted-foreground mt-1">
-            Review the generated layout below. You can export the result as a Word document.
+            Review the generated layout below. Each row contains the front and back of an ID.
           </p>
         </div>
         <div className="flex gap-2">
@@ -178,38 +167,26 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
       </div>
       <div id="preview-content" className="space-y-8">
         {pages.map((pageData, pageIndex) => (
-          <React.Fragment key={pageIndex}>
-            {/* Fronts */}
-            <div className="p-4 bg-white shadow-lg rounded-lg">
-              <h2 className="text-center font-bold mb-4 text-gray-600">
-                Page {pageIndex * 2 + 1} - Fronts
-              </h2>
-              <div className="grid grid-cols-4 gap-4 w-full max-w-6xl mx-auto">
-                {Array.from({ length: 4 }).map((_, i) =>
-                  pageData[i] ? (
-                    <IdCardPreview key={`front-${i}`} data={pageData[i]} side="front" />
-                  ) : (
-                    <div key={`front-empty-${i}`} className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
-                  )
-                )}
-              </div>
+          <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg">
+            <h2 className="text-center font-bold mb-4 text-gray-600">
+              Page {pageIndex + 1}
+            </h2>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-4 w-full max-w-4xl mx-auto">
+              {Array.from({ length: cardsPerPage }).flatMap((_, i) =>
+                pageData[i] ? (
+                  <React.Fragment key={`card-${i}`}>
+                    <IdCardPreview data={pageData[i]} side="front" />
+                    <IdCardPreview data={pageData[i]} side="back" />
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment key={`empty-${i}`}>
+                    <div className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
+                    <div className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
+                  </React.Fragment>
+                )
+              )}
             </div>
-            {/* Backs */}
-            <div className="p-4 bg-white shadow-lg rounded-lg">
-              <h2 className="text-center font-bold mb-4 text-gray-600">
-                Page {pageIndex * 2 + 2} - Backs
-              </h2>
-              <div className="grid grid-cols-4 gap-4 w-full max-w-6xl mx-auto">
-                {Array.from({ length: 4 }).map((_, i) =>
-                  pageData[i] ? (
-                    <IdCardPreview key={`back-${i}`} data={pageData[i]} side="back" />
-                  ) : (
-                    <div key={`back-empty-${i}`} className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
-                  )
-                )}
-              </div>
-            </div>
-          </React.Fragment>
+          </div>
         ))}
         {pages.length === 0 && (
             <div className="text-center py-12">
