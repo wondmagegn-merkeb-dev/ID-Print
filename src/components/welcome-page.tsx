@@ -67,14 +67,14 @@ export function WelcomePage() {
             </div>
             <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
-                <Image
-                src="/hero-fyda.png"
-                alt="ID Batcher workflow illustration"
-                width={600}
-                height={400}
-                data-ai-hint="workflow illustration"
-                className="rounded-2xl shadow-2xl relative transition-transform duration-500 ease-in-out hover:scale-105"
-                />
+                <div className='w-[600px] h-[400px] item-center justify-center relative rounded-2xl shadow-2xl bg-transparen transition-transform duration-500 ease-in-out hover:scale-105'>
+                  <Image
+                    src="/hero-fyda.png"
+                    alt="ID Batcher workflow illustration"
+                    fill
+                    className="object-contain rounded-2xl rounded-2xl shadow-2xl"
+                  />
+                </div>
             </div>
             </div>
         </div>
