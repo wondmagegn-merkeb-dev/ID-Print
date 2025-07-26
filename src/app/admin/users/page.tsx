@@ -5,10 +5,21 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { MoreHorizontal, PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2, Eye } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2, Eye } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState } from 'react';
 import Link from 'next/link';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const initialUsers = [
     {
@@ -98,6 +109,7 @@ const USERS_PER_PAGE = 6;
 export default function AdminUsersPage() {
   const [users, setUsers] = useState(initialUsers);
   const [currentPage, setCurrentPage] = useState(1);
+  const [userToDelete, setUserToDelete] = useState<string | null>(null);
 
   const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
   const paginatedUsers = users.slice(
@@ -105,15 +117,16 @@ export default function AdminUsersPage() {
     currentPage * USERS_PER_PAGE
   );
 
-  const handleDelete = (userId: string) => {
-    if (window.confirm('Are you sure you want to delete this user?')) {
-      const updatedUsers = users.filter(u => u.id !== userId);
+  const confirmDelete = () => {
+    if (userToDelete) {
+      const updatedUsers = users.filter(u => u.id !== userToDelete);
       setUsers(updatedUsers);
       
       const newTotalPages = Math.ceil(updatedUsers.length / USERS_PER_PAGE);
       if (currentPage > newTotalPages) {
           setCurrentPage(Math.max(1, newTotalPages));
       }
+      setUserToDelete(null); // Reset after deletion
     }
   }
   
@@ -122,94 +135,114 @@ export default function AdminUsersPage() {
 
 
   return (
-    <div className="grid gap-6">
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <div>
-                <CardTitle>Manage Users</CardTitle>
-                <CardDescription>A list of all registered users.</CardDescription>
+    <AlertDialog>
+      <div className="grid gap-6">
+        <Card>
+          <CardHeader>
+            <div className="flex justify-between items-center">
+              <div>
+                  <CardTitle>Manage Users</CardTitle>
+                  <CardDescription>A list of all registered users.</CardDescription>
+              </div>
+              <Button asChild>
+                  <Link href="/admin/users/add">
+                      <PlusCircle className="mr-2 h-4 w-4" />
+                      Add New User
+                  </Link>
+              </Button>
             </div>
-            <Button asChild>
-                <Link href="/admin/users/add">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Add New User
-                </Link>
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>User</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Sign-up Date</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {paginatedUsers.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">
-                    <div className="flex items-center gap-3">
-                        <Avatar className="h-8 w-8">
-                            <AvatarImage src={user.avatar} alt={user.name} />
-                            <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        {user.name}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                      <div className="text-sm">{user.email}</div>
-                      <div className="text-xs text-muted-foreground">{user.phone}</div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={user.role === 'Admin' ? 'default' : 'outline'}>{user.role}</Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={user.status === 'Active' ? 'default' : 'destructive'}>{user.status}</Badge>
-                  </TableCell>
-                  <TableCell>{user.signupDate}</TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(user.id)}>
-                            <Pencil className="h-4 w-4" />
-                            <span className="sr-only">Edit</span>
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => viewDetails(user.id)}>
-                            <Eye className="h-4 w-4" />
-                            <span className="sr-only">View Details</span>
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(user.id)} className="text-destructive hover:text-destructive">
-                            <Trash2 className="h-4 w-4" />
-                            <span className="sr-only">Delete</span>
-                        </Button>
-                    </div>
-                  </TableCell>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>User</TableHead>
+                  <TableHead>Contact</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Sign-up Date</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {totalPages > 1 && (
-            <div className="flex justify-between items-center pt-4">
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
-                    <ChevronLeft className="mr-1 h-4 w-4" />
-                    Previous
-                </Button>
-                <span className="text-sm text-muted-foreground">
-                    Page {currentPage} of {totalPages}
-                </span>
-                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
-                    Next
-                    <ChevronRight className="ml-1 h-4 w-4" />
-                </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+              </TableHeader>
+              <TableBody>
+                {paginatedUsers.map((user) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                              <AvatarImage src={user.avatar} alt={user.name} />
+                              <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          {user.name}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                        <div className="text-sm">{user.email}</div>
+                        <div className="text-xs text-muted-foreground">{user.phone}</div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={user.role === 'Admin' ? 'default' : 'outline'}>{user.role}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={user.status === 'Active' ? 'default' : 'destructive'}>{user.status}</Badge>
+                    </TableCell>
+                    <TableCell>{user.signupDate}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                          <Button variant="ghost" size="icon" onClick={() => handleEdit(user.id)}>
+                              <Pencil className="h-4 w-4" />
+                              <span className="sr-only">Edit</span>
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => viewDetails(user.id)}>
+                              <Eye className="h-4 w-4" />
+                              <span className="sr-only">View Details</span>
+                          </Button>
+                          <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" onClick={() => setUserToDelete(user.id)} className="text-destructive hover:text-destructive">
+                                  <Trash2 className="h-4 w-4" />
+                                  <span className="sr-only">Delete</span>
+                              </Button>
+                          </AlertDialogTrigger>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {totalPages > 1 && (
+              <div className="flex justify-between items-center pt-4">
+                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                      <ChevronLeft className="mr-1 h-4 w-4" />
+                      Previous
+                  </Button>
+                  <span className="text-sm text-muted-foreground">
+                      Page {currentPage} of {totalPages}
+                  </span>
+                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                      Next
+                      <ChevronRight className="ml-1 h-4 w-4" />
+                  </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete the user account
+            and remove their data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={() => setUserToDelete(null)}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={confirmDelete} className="bg-destructive hover:bg-destructive/90">
+            Continue
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
