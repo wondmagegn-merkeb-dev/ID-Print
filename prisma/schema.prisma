@@ -10,24 +10,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  phone     String?
-  password  String
-  role      Role     @default(USER)
-  status    Status   @default(ACTIVE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
 enum Role {
-  ADMIN
-  USER
+  Admin
+  User
 }
 
 enum Status {
-  ACTIVE
-  INACTIVE
+  Active
+  Inactive
+}
+
+model User {
+  id                          String    @id @default(cuid())
+  name                        String?
+  email                       String    @unique
+  phone                       String?   @unique
+  password                    String
+  role                        Role      @default(User)
+  status                      Status    @default(Active)
+  forgotPasswordToken         String?
+  forgotPasswordTokenExpiry   DateTime?
+  isChangePassword            Boolean   @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
