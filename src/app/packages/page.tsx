@@ -1,16 +1,24 @@
 
+'use client';
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check } from "lucide-react";
+import { Check, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { AppLogo } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { useRouter } from "next/navigation";
 
 function PackagesHeader() {
+    const router = useRouter();
     return (
       <header className="bg-background/80 backdrop-blur-sm border-b shadow-sm sticky top-0 z-40">
         <div className="px-4 py-3 flex justify-between items-center">
           <div className="flex items-center gap-3">
+            <Button variant="outline" size="icon" onClick={() => router.back()} className="mr-2">
+                <ChevronLeft className="h-4 w-4" />
+                <span className="sr-only">Back</span>
+            </Button>
             <Link href="/" className="flex items-center gap-3">
               <AppLogo className="h-8 w-8 text-primary" />
               <h1 className="text-2xl font-bold text-foreground font-headline">
