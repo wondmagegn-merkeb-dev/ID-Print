@@ -171,12 +171,6 @@ function UploadStep({
         </div>
 
         <div className="mt-8 flex justify-center gap-4">
-            <Button asChild variant="outline" size="lg">
-                <Link href="/dashboard/sessions">
-                    <FolderClock />
-                    View Saved Sessions
-                </Link>
-            </Button>
             <Button onClick={handleMergeClick} disabled={isProcessing || files.length === 0} size="lg">
               {isProcessing ? (
                 <>

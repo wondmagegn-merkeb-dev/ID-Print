@@ -1,17 +1,31 @@
 
+'use client';
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
+  const router = useRouter();
+
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
-        <p className="text-muted-foreground">Manage your account and password settings.</p>
+      <header className="mb-6">
+          <div className="flex items-center gap-4 mb-2">
+              <Button variant="outline" size="icon" onClick={() => router.back()}>
+                  <ChevronLeft className="h-4 w-4" />
+                  <span className="sr-only">Back</span>
+              </Button>
+              <div>
+                <h1 className="text-3xl font-bold tracking-tight">Profile Settings</h1>
+                <p className="text-muted-foreground">Manage your account and password settings.</p>
+              </div>
+          </div>
       </header>
       <Separator />
 
