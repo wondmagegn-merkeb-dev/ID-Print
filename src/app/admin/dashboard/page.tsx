@@ -75,7 +75,7 @@ const users = [
     },
 ];
 
-const USERS_PER_PAGE = 7;
+const USERS_PER_PAGE = 6;
 
 export default function AdminDashboardPage() {
   const [currentPage, setCurrentPage] = useState(1);

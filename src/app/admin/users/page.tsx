@@ -93,7 +93,7 @@ const initialUsers = [
     },
 ];
 
-const USERS_PER_PAGE = 7;
+const USERS_PER_PAGE = 6;
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState(initialUsers);

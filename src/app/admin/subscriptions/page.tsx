@@ -69,7 +69,7 @@ const initialSubscriptions = [
   },
 ];
 
-const SUBSCRIPTIONS_PER_PAGE = 7;
+const SUBSCRIPTIONS_PER_PAGE = 6;
 
 export default function AdminSubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);

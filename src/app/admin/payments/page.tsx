@@ -69,7 +69,7 @@ const initialPayments = [
   },
 ];
 
-const PAYMENTS_PER_PAGE = 7;
+const PAYMENTS_PER_PAGE = 6;
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState(initialPayments);
