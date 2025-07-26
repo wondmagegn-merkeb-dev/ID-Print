@@ -4,8 +4,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { MoreHorizontal, PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2, Eye } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -157,22 +157,25 @@ export default function AdminUsersPage() {
                       <div className="text-sm">{user.email}</div>
                       <div className="text-xs text-muted-foreground">{user.phone}</div>
                   </TableCell>
-                  <TableCell>{user.role}</TableCell>
+                  <TableCell>
+                    <Badge variant={user.role === 'Admin' ? 'default' : 'outline'}>{user.role}</Badge>
+                  </TableCell>
                   <TableCell>{user.signupDate}</TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
+                    <div className="flex items-center justify-end gap-2">
+                        <Button variant="ghost" size="icon" onClick={() => handleEdit(user.id)}>
+                            <Pencil className="h-4 w-4" />
+                            <span className="sr-only">Edit</span>
                         </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleEdit(user.id); }}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); viewDetails(user.id); }}>View Details</DropdownMenuItem>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleDelete(user.id); }} className="text-destructive">Delete</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                        <Button variant="ghost" size="icon" onClick={() => viewDetails(user.id)}>
+                            <Eye className="h-4 w-4" />
+                            <span className="sr-only">View Details</span>
+                        </Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(user.id)} className="text-destructive hover:text-destructive">
+                            <Trash2 className="h-4 w-4" />
+                            <span className="sr-only">Delete</span>
+                        </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
