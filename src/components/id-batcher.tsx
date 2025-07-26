@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   FileSignature,
+  FolderClock,
 } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 import { FileUploader } from './id-batcher/file-uploader';
@@ -20,6 +21,7 @@ import { ImpositionPreview } from './id-batcher/imposition-preview';
 import type { IdData } from '@/ai/flow';
 import { processFiles, FileInput, mergePdfs } from '@/app/actions';
 import { MergedPdfPreview } from './id-batcher/merged-pdf-preview';
+import Link from 'next/link';
 
 type FileWithPreview = {
   file: File;
@@ -168,20 +170,26 @@ function UploadStep({
           </div>
         </div>
 
-        <div className="mt-8 flex justify-center">
-          <Button onClick={handleMergeClick} disabled={isProcessing || files.length === 0} size="lg">
-            {isProcessing ? (
-              <>
-                <LoaderCircle className="animate-spin" />
-                Merging...
-              </>
-            ) : (
-              <>
-                <FileSignature />
-                Merge {files.length > 0 ? `${files.length} PDF(s)` : 'PDFs'}
-              </>
-            )}
-          </Button>
+        <div className="mt-8 flex justify-center gap-4">
+            <Button asChild variant="outline" size="lg">
+                <Link href="/dashboard/sessions">
+                    <FolderClock />
+                    View Saved Sessions
+                </Link>
+            </Button>
+            <Button onClick={handleMergeClick} disabled={isProcessing || files.length === 0} size="lg">
+              {isProcessing ? (
+                <>
+                  <LoaderCircle className="animate-spin" />
+                  Merging...
+                </>
+              ) : (
+                <>
+                  <FileSignature />
+                  Merge {files.length > 0 ? `${files.length} PDF(s)` : 'PDFs'}
+                </>
+              )}
+            </Button>
         </div>
       </div>
   )
