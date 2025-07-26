@@ -42,7 +42,7 @@ function fileToBase64(file: File): Promise<string> {
     });
 }
 
-function UploadStep({ onFilesMerged, isProcessing }: { onFilesMerged: (mergedPdfBase64: string) => void; isProcessing: boolean }) {
+function UploadStep({ onMerge, isProcessing }: { onMerge: (files: FileWithPreview[]) => Promise<void>; isProcessing: boolean }) {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const { toast } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,7 +72,7 @@ function UploadStep({ onFilesMerged, isProcessing }: { onFilesMerged: (mergedPdf
     });
   };
   
-  const handleMerge = async () => {
+  const handleMergeClick = async () => {
     if (files.length === 0) {
       toast({
         variant: 'destructive',
@@ -81,31 +81,7 @@ function UploadStep({ onFilesMerged, isProcessing }: { onFilesMerged: (mergedPdf
       });
       return;
     }
-
-    try {
-        const fileInputs: FileInput[] = await Promise.all(
-            files.map(async (fileWithPreview) => {
-                const { file } = fileWithPreview;
-                const base64Data = await fileToBase64(file);
-                return {
-                    name: file.name,
-                    type: file.type,
-                    base64Data,
-                };
-            })
-        );
-        
-        const mergedPdfBase64 = await mergePdfs(fileInputs);
-        onFilesMerged(mergedPdfBase64);
-
-    } catch (e) {
-      const error = e as Error;
-      toast({
-        variant: 'destructive',
-        title: 'Merging Error',
-        description: error.message || 'Could not merge PDFs.',
-      });
-    }
+    await onMerge(files);
   };
 
   const formatBytes = (bytes: number, decimals = 2) => {
@@ -188,7 +164,7 @@ function UploadStep({ onFilesMerged, isProcessing }: { onFilesMerged: (mergedPdf
         </div>
 
         <div className="mt-8 flex justify-center">
-          <Button onClick={handleMerge} disabled={isProcessing || files.length === 0} size="lg">
+          <Button onClick={handleMergeClick} disabled={isProcessing || files.length === 0} size="lg">
             {isProcessing ? (
               <>
                 <LoaderCircle className="animate-spin" />
@@ -215,11 +191,37 @@ export function IdBatcher() {
   const [mergedPdf, setMergedPdf] = useState<string | null>(null);
   const [extractedData, setExtractedData] = useState<IdData[]>([]);
 
-  const handleFilesMerged = (mergedPdfBase64: string) => {
-    setMergedPdf(mergedPdfBase64);
-    setStep('preview_merged');
-    setIsProcessing(false);
-  }
+  const handleMerge = async (files: FileWithPreview[]) => {
+    setIsProcessing(true);
+    setError(null);
+    try {
+        const fileInputs: FileInput[] = await Promise.all(
+            files.map(async (fileWithPreview) => {
+                const { file } = fileWithPreview;
+                const base64Data = await fileToBase64(file);
+                return {
+                    name: file.name,
+                    type: file.type,
+                    base64Data,
+                };
+            })
+        );
+        
+        const mergedPdfBase64 = await mergePdfs(fileInputs);
+        setMergedPdf(mergedPdfBase64);
+        setStep('preview_merged');
+
+    } catch (e) {
+      const error = e as Error;
+      toast({
+        variant: 'destructive',
+        title: 'Merging Error',
+        description: error.message || 'Could not merge PDFs.',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const handleGenerateIds = async () => {
     if (!mergedPdf) {
@@ -265,14 +267,14 @@ export function IdBatcher() {
   const renderStep = () => {
     switch(step) {
       case 'upload':
-        return <UploadStep onFilesMerged={handleFilesMerged} isProcessing={isProcessing} />;
+        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} />;
       case 'preview_merged':
         if (!mergedPdf) return null;
         return <MergedPdfPreview pdfBase64={mergedPdf} onGenerate={handleGenerateIds} onStartOver={handleStartOver} isProcessing={isProcessing} />;
       case 'preview_ids':
         return <ImpositionPreview data={extractedData} onStartOver={handleStartOver} />;
       default:
-        return <UploadStep onFilesMerged={handleFilesMerged} isProcessing={isProcessing} />;
+        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} />;
     }
   }
 
