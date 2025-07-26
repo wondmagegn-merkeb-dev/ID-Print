@@ -145,8 +145,8 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
   };
 
   return (
-    <div>
-      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+    <div className="flex flex-col h-[calc(100vh-90px)]">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-2 gap-4">
         <div>
           <h1 className="font-headline text-4xl font-bold text-primary/90">Step 3: Preview & Export</h1>
           <p className="text-muted-foreground mt-1">
@@ -165,34 +165,36 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
           </Button>
         </div>
       </div>
-      <div id="preview-content" className="space-y-8 flex flex-col items-center">
-        {pages.map((pageData, pageIndex) => (
-          <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg w-full max-w-5xl">
-            <h2 className="text-center font-bold mb-4 text-gray-600">
-              Page {pageIndex + 1}
-            </h2>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4 w-full max-w-4xl mx-auto">
-              {Array.from({ length: cardsPerPage }).flatMap((_, i) =>
-                pageData[i] ? (
-                  <React.Fragment key={`card-${i}`}>
-                    <IdCardPreview data={pageData[i]} side="front" />
-                    <IdCardPreview data={pageData[i]} side="back" />
-                  </React.Fragment>
-                ) : (
-                  <React.Fragment key={`empty-${i}`}>
-                    <div className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
-                    <div className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
-                  </React.Fragment>
-                )
-              )}
+      <div className="flex-1 overflow-y-auto p-4 bg-muted/30 rounded-lg">
+        <div id="preview-content" className="space-y-8 flex flex-col items-center">
+            {pages.map((pageData, pageIndex) => (
+            <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg w-full max-w-5xl">
+                <h2 className="text-center font-bold mb-4 text-gray-600">
+                Page {pageIndex + 1}
+                </h2>
+                <div className="grid grid-cols-2 gap-x-4 gap-y-4 w-full max-w-4xl mx-auto">
+                {Array.from({ length: cardsPerPage }).flatMap((_, i) =>
+                    pageData[i] ? (
+                    <React.Fragment key={`card-${i}`}>
+                        <IdCardPreview data={pageData[i]} side="front" />
+                        <IdCardPreview data={pageData[i]} side="back" />
+                    </React.Fragment>
+                    ) : (
+                    <React.Fragment key={`empty-${i}`}>
+                        <div className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
+                        <div className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
+                    </React.Fragment>
+                    )
+                )}
+                </div>
             </div>
-          </div>
-        ))}
-        {pages.length === 0 && (
-            <div className="text-center py-12">
-                <p className="text-muted-foreground">No text could be extracted from the merged PDF.</p>
-            </div>
-        )}
+            ))}
+            {pages.length === 0 && (
+                <div className="text-center py-12">
+                    <p className="text-muted-foreground">No text could be extracted from the merged PDF.</p>
+                </div>
+            )}
+        </div>
       </div>
     </div>
   );
