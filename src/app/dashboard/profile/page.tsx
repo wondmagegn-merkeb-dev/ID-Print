@@ -38,7 +38,7 @@ export default function ProfilePage() {
               <Input id="email" type="email" defaultValue="user@example.com" disabled />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex justify-end">
             <Button>Update Information</Button>
           </CardFooter>
         </Card>
@@ -62,7 +62,7 @@ export default function ProfilePage() {
               <Input id="confirm-password" type="password" />
             </div>
           </CardContent>
-          <CardFooter>
+          <CardFooter className="flex justify-end">
             <Button>Change Password</Button>
           </CardFooter>
         </Card>
