@@ -33,6 +33,7 @@ async function extractTextFromPdf(base64Data: string): Promise<string> {
   const fileBuffer = Buffer.from(base64Data, 'base64');
   const pdfExtractor = new PDFExtract();
   try {
+    // The empty options object is sometimes required for the library to work correctly with merged PDFs.
     const data = await pdfExtractor.extract(fileBuffer, {});
     return data.pages.map(page => page.content.map(c => c.str).join(' ')).join('\n\n');
   } catch (error) {

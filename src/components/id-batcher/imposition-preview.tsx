@@ -201,11 +201,11 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
       <div className="flex-1 overflow-auto p-4 bg-muted/30 rounded-lg">
         <div id="preview-content" className="grid grid-cols-1 md:grid-cols-2 gap-8 justify-items-center">
             {pages.map((pageData, pageIndex) => (
-            <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg w-[210mm] h-[297mm] transform scale-[0.3] md:scale-100 md:origin-top-left">
+            <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg w-full max-w-[210mm]">
                 <h2 className="text-center font-bold mb-4 text-gray-600">
                 Page {pageIndex + 1}
                 </h2>
-                <div className="grid grid-cols-2 gap-x-4 gap-y-4 w-full max-w-4xl mx-auto">
+                <div className="grid grid-cols-2 gap-x-4 gap-y-4 w-full mx-auto">
                 {Array.from({ length: cardsPerPage }).flatMap((_, i) =>
                     pageData[i] ? (
                     <React.Fragment key={`card-${i}`}>
