@@ -33,7 +33,7 @@ const formSchema = z.object({
   role: z.enum(["Admin", "User"], { required_error: "Please select a role." }),
   status: z.enum(["Active", "Inactive"], { required_error: "Please select a status." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  requirePasswordChange: z.boolean().default(false).optional(),
+  isChangePassword: z.boolean().default(false).optional(),
 });
 
 export function AddUserForm() {
@@ -48,14 +48,15 @@ export function AddUserForm() {
       name: "",
       phone: "+251",
       email: "",
+      role: "User",
       status: "Active",
       password: "",
-      requirePasswordChange: false,
+      isChangePassword: false,
     },
   })
 
   function getFirstError(errors: FieldErrors<z.infer<typeof formSchema>>) {
-    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'role', 'status', 'password', 'requirePasswordChange'];
+    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'role', 'status', 'password', 'isChangePassword'];
     for (const field of fieldOrder) {
       if (errors[field]) {
         return field;
@@ -66,18 +67,39 @@ export function AddUserForm() {
 
   const firstError = getFirstError(form.formState.errors);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log(values)
-    // Mock API call
-    setTimeout(() => {
+    try {
+      const response = await fetch('/api/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Failed to create user.');
+      }
+
       toast({
         title: "User Created",
         description: `Account for ${values.name} has been successfully created.`,
-      })
-      setIsLoading(false);
+      });
       router.push('/admin/users');
-    }, 1000);
+
+    } catch (error) {
+      const e = error as Error;
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: e.message || "An unknown error occurred.",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function onInvalid(errors: FieldErrors<z.infer<typeof formSchema>>) {
@@ -213,7 +235,7 @@ export function AddUserForm() {
                 
                  <FormField
                     control={form.control}
-                    name="requirePasswordChange"
+                    name="isChangePassword"
                     render={({ field }) => (
                       <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
                         <FormControl>
