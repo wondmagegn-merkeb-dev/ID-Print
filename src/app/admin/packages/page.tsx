@@ -11,6 +11,13 @@ import { useState } from 'react';
 
 const initialPlans = [
     {
+      name: "Starter",
+      price: "$5/month",
+      description: "For hobbyists and personal projects.",
+      features: "100 extractions/month",
+      popular: false,
+    },
+    {
       name: "Basic",
       price: "$9/month",
       description: "For individuals and small teams.",
@@ -23,6 +30,13 @@ const initialPlans = [
       description: "For growing businesses.",
       features: "2500 extractions/month",
       popular: true,
+    },
+    {
+      name: "Business",
+      price: "$99/month",
+      description: "For established businesses.",
+      features: "10,000 extractions/month",
+      popular: false,
     },
     {
       name: "Enterprise",
