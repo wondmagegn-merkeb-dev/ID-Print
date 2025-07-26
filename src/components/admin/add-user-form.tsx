@@ -30,7 +30,6 @@ const formSchema = z.object({
     .regex(/^\+251[79]\d{8}$/, { message: "Phone must be a valid Ethiopian number (+2519... or +2517...)." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   role: z.enum(["Admin", "User"], { required_error: "Please select a role." }),
-  plan: z.enum(["Basic", "Pro", "Enterprise"], { required_error: "Please select a plan." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
@@ -57,7 +56,7 @@ export function AddUserForm() {
   })
 
   function getFirstError(errors: FieldErrors<z.infer<typeof formSchema>>) {
-    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'role', 'plan', 'password', 'confirmPassword'];
+    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'role', 'password', 'confirmPassword'];
     for (const field of fieldOrder) {
       if (errors[field]) {
         return field;
@@ -165,28 +164,6 @@ export function AddUserForm() {
                                 <SelectContent>
                                 <SelectItem value="Admin">Admin</SelectItem>
                                 <SelectItem value="User">User</SelectItem>
-                                </SelectContent>
-                            </Select>
-                            <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="plan"
-                        render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Subscription Plan</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                <SelectTrigger className={cn(firstError === 'plan' && "border-destructive ring-2 ring-destructive/20")}>
-                                    <SelectValue placeholder="Select a plan" />
-                                </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                <SelectItem value="Basic">Basic</SelectItem>
-                                <SelectItem value="Pro">Pro</SelectItem>
-                                <SelectItem value="Enterprise">Enterprise</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />

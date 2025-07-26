@@ -4,7 +4,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,7 +17,6 @@ const initialUsers = [
       email: "john.d@example.com",
       phone: "+251912345678",
       role: "Admin",
-      plan: "Pro",
       signupDate: "2023-10-26",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704a",
     },
@@ -28,7 +26,6 @@ const initialUsers = [
       email: "jane.s@example.com",
       phone: "+251711223344",
       role: "User",
-      plan: "Basic",
       signupDate: "2023-10-25",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704b",
     },
@@ -38,7 +35,6 @@ const initialUsers = [
       email: "sam.w@example.com",
       phone: "+251922334455",
       role: "User",
-      plan: "Pro",
       signupDate: "2023-10-24",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704c",
     },
@@ -48,7 +44,6 @@ const initialUsers = [
         email: "alice.j@example.com",
         phone: "+251933445566",
         role: "User",
-        plan: "Enterprise",
         signupDate: "2023-10-23",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
     },
@@ -58,7 +53,6 @@ const initialUsers = [
         email: "bob.b@example.com",
         phone: "+251712345678",
         role: "User",
-        plan: "Basic",
         signupDate: "2023-10-22",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704e",
     },
@@ -68,7 +62,6 @@ const initialUsers = [
         email: "charlie.d@example.com",
         phone: "+251911223344",
         role: "User",
-        plan: "Pro",
         signupDate: "2023-10-21",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704f",
     },
@@ -78,7 +71,6 @@ const initialUsers = [
         email: "diana.p@example.com",
         phone: "+251921345678",
         role: "Admin",
-        plan: "Enterprise",
         signupDate: "2023-10-20",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704g",
     },
@@ -88,7 +80,6 @@ const initialUsers = [
         email: "eve.a@example.com",
         phone: "+251733445566",
         role: "User",
-        plan: "Basic",
         signupDate: "2023-10-19",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704h",
     },
@@ -146,7 +137,6 @@ export default function AdminUsersPage() {
                 <TableHead>User</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Role</TableHead>
-                <TableHead>Plan</TableHead>
                 <TableHead>Sign-up Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -168,11 +158,6 @@ export default function AdminUsersPage() {
                       <div className="text-xs text-muted-foreground">{user.phone}</div>
                   </TableCell>
                   <TableCell>{user.role}</TableCell>
-                  <TableCell>
-                      <Badge variant={user.plan === 'Pro' ? 'default' : user.plan === 'Enterprise' ? 'secondary' : 'outline'}>
-                        {user.plan}
-                      </Badge>
-                  </TableCell>
                   <TableCell>{user.signupDate}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
