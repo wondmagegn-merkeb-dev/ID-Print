@@ -14,14 +14,12 @@ import {
   ChevronRight,
   FileSignature,
 } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FileUploader } from './id-batcher/file-uploader';
 import { ImpositionPreview } from './id-batcher/imposition-preview';
 import type { IdData } from '@/ai/flow';
 import { processFiles, FileInput, mergePdfs } from '@/app/actions';
 import { MergedPdfPreview } from './id-batcher/merged-pdf-preview';
-import { SavedSessions } from './id-batcher/saved-sessions';
-
 
 type FileWithPreview = {
   file: File;
@@ -46,11 +44,9 @@ function fileToBase64(file: File): Promise<string> {
 function UploadStep({ 
   onMerge, 
   isProcessing,
-  onLoadSession 
 }: { 
   onMerge: (files: FileWithPreview[]) => Promise<void>; 
   isProcessing: boolean;
-  onLoadSession: (data: IdData[]) => void;
 }) {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const { toast } = useToast();
@@ -187,7 +183,6 @@ function UploadStep({
             )}
           </Button>
         </div>
-        <SavedSessions onLoadSession={onLoadSession} />
       </div>
   )
 }
@@ -200,6 +195,23 @@ export function IdBatcher() {
   
   const [mergedPdf, setMergedPdf] = useState<string | null>(null);
   const [extractedData, setExtractedData] = useState<IdData[]>([]);
+
+  useEffect(() => {
+    // Check for a session to load when the component mounts
+    try {
+      const sessionToLoad = localStorage.getItem('id-batcher-load-session');
+      if (sessionToLoad) {
+        const data: IdData[] = JSON.parse(sessionToLoad);
+        // Clear the item so it doesn't load again on refresh
+        localStorage.removeItem('id-batcher-load-session');
+        handleLoadSession(data);
+      }
+    } catch (e) {
+      console.error('Failed to load session from localStorage:', e);
+      localStorage.removeItem('id-batcher-load-session');
+    }
+  }, []); // Empty dependency array means this runs once on mount
+
 
   const handleMerge = async (files: FileWithPreview[]) => {
     setIsProcessing(true);
@@ -286,14 +298,14 @@ export function IdBatcher() {
   const renderStep = () => {
     switch(step) {
       case 'upload':
-        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} onLoadSession={handleLoadSession} />;
+        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} />;
       case 'preview_merged':
         if (!mergedPdf) return null;
         return <MergedPdfPreview pdfBase64={mergedPdf} onGenerate={handleGenerateIds} onStartOver={handleStartOver} isProcessing={isProcessing} />;
       case 'preview_ids':
         return <ImpositionPreview data={extractedData} onStartOver={handleStartOver} />;
       default:
-        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} onLoadSession={handleLoadSession} />;
+        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} />;
     }
   }
 

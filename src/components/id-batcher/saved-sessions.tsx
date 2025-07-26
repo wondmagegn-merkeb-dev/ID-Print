@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import type { IdData } from '@/ai/flow';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
-import { ScrollArea } from '../ui/scroll-area';
 import { Separator } from '../ui/separator';
 import { FileStack, Trash2, Download, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -31,7 +30,7 @@ type SavedSessionsProps = {
   onLoadSession: (data: IdData[]) => void;
 };
 
-const SESSIONS_PER_PAGE = 3;
+const SESSIONS_PER_PAGE = 5;
 
 export function SavedSessions({ onLoadSession }: SavedSessionsProps) {
   const [sessions, setSessions] = useState<SavedSession[]>([]);
@@ -102,70 +101,68 @@ export function SavedSessions({ onLoadSession }: SavedSessionsProps) {
   );
   
   if (sessions.length === 0) {
-    return null;
+    return (
+        <div className="text-center py-12 border-2 border-dashed rounded-lg">
+            <p className="text-muted-foreground">You have no saved sessions.</p>
+        </div>
+    );
   }
 
   return (
-    <div className="mt-12">
-      <Separator />
-      <Card className="mt-8 border-0 shadow-none">
-        <CardHeader className="px-1">
-          <CardTitle>Saved Sessions</CardTitle>
-          <CardDescription>Load a previously saved batch from the last 30 days.</CardDescription>
-        </CardHeader>
-        <CardContent className="px-1">
-          {isMobile ? (
-             <div className="space-y-4">
-              {paginatedSessions.map(session => (
+    <Card className="border-0 shadow-none">
+    <CardContent className="px-1">
+        {isMobile ? (
+            <div className="space-y-4">
+            {paginatedSessions.map(session => (
                 <Card key={session.id} className="shadow-md">
-                   <CardContent className="p-4 flex items-center gap-4">
-                     <div className="w-12 h-12 flex items-center justify-center bg-muted rounded-lg shrink-0">
-                       <FileStack className="w-6 h-6 text-muted-foreground" />
-                     </div>
-                     <div className="flex-1 overflow-hidden">
-                       <p className="font-semibold text-base truncate">
-                         Batch of {session.cardCount} cards
-                       </p>
-                       <p className="text-sm text-muted-foreground">
-                         Saved: {new Date(session.timestamp).toLocaleDateString()}
-                       </p>
-                       <p className="text-xs font-mono text-primary/80 pt-1">
-                         {getRemainingDays(session.timestamp)}
-                       </p>
-                     </div>
-                   </CardContent>
-                   <div className="p-4 pt-0 flex gap-2 justify-end">
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(session.id)}>
+                    <CardContent className="p-4 flex items-center gap-4">
+                    <div className="w-12 h-12 flex items-center justify-center bg-muted rounded-lg shrink-0">
+                        <FileStack className="w-6 h-6 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1 overflow-hidden">
+                        <p className="font-semibold text-base truncate">
+                        Batch of {session.cardCount} cards
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                        Saved: {new Date(session.timestamp).toLocaleDateString()}
+                        </p>
+                        <p className="text-xs font-mono text-primary/80 pt-1">
+                        {getRemainingDays(session.timestamp)}
+                        </p>
+                    </div>
+                    </CardContent>
+                    <div className="p-4 pt-0 flex gap-2 justify-end">
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(session.id)}>
                         <Trash2 className="w-4 h-4 mr-2" /> Delete
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={() => handleDownload(session)}>
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => handleDownload(session)}>
                         <Download className="w-4 h-4 mr-2" /> Download
-                      </Button>
-                      <Button size="sm" onClick={() => onLoadSession(session.data)}>
-                          Load
-                      </Button>
-                   </div>
+                    </Button>
+                    <Button size="sm" onClick={() => onLoadSession(session.data)}>
+                        Load
+                    </Button>
+                    </div>
                 </Card>
-              ))}
-             </div>
-          ) : (
+            ))}
+            </div>
+        ) : (
             <Table>
-              <TableHeader>
+            <TableHeader>
                 <TableRow>
-                  <TableHead>Batch Details</TableHead>
-                  <TableHead>Saved On</TableHead>
-                  <TableHead>Expires In</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Batch Details</TableHead>
+                <TableHead>Saved On</TableHead>
+                <TableHead>Expires In</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
+            </TableHeader>
+            <TableBody>
                 {paginatedSessions.map(session => (
-                  <TableRow key={session.id}>
+                <TableRow key={session.id}>
                     <TableCell className="font-medium">Batch of {session.cardCount} cards</TableCell>
                     <TableCell>{new Date(session.timestamp).toLocaleString()}</TableCell>
                     <TableCell>{getRemainingDays(session.timestamp)}</TableCell>
                     <TableCell className="text-right">
-                       <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-2">
                         <Button variant="outline" size="sm" onClick={() => onLoadSession(session.data)}>
                             Load
                         </Button>
@@ -187,31 +184,30 @@ export function SavedSessions({ onLoadSession }: SavedSessionsProps) {
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                      </div>
+                        </div>
                     </TableCell>
-                  </TableRow>
+                </TableRow>
                 ))}
-              </TableBody>
+            </TableBody>
             </Table>
-          )}
+        )}
 
-          {totalPages > 1 && (
-              <div className="flex justify-between items-center pt-4">
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
-                      <ChevronLeft className="mr-1 h-4 w-4" />
-                      Previous
-                  </Button>
-                  <span className="text-sm text-muted-foreground">
-                      Page {currentPage} of {totalPages}
-                  </span>
-                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
-                      Next
-                      <ChevronRight className="ml-1 h-4 w-4" />
-                  </Button>
-              </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+        {totalPages > 1 && (
+            <div className="flex justify-between items-center pt-4">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                    <ChevronLeft className="mr-1 h-4 w-4" />
+                    Previous
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                    Next
+                    <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+            </div>
+        )}
+    </CardContent>
+    </Card>
   );
 }
