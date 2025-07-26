@@ -16,12 +16,13 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { User, Phone, Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react"
+import { User, Phone, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "../ui/card"
+import { Card, CardContent, CardFooter } from "../ui/card"
+import { Checkbox } from "../ui/checkbox"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -32,17 +33,13 @@ const formSchema = z.object({
   role: z.enum(["Admin", "User"], { required_error: "Please select a role." }),
   status: z.enum(["Active", "Inactive"], { required_error: "Please select a status." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  confirmPassword: z.string()
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Passwords do not match.",
-  path: ["confirmPassword"],
+  requirePasswordChange: z.boolean().default(false).optional(),
 });
 
 export function AddUserForm() {
   const { toast } = useToast()
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,12 +50,12 @@ export function AddUserForm() {
       email: "",
       status: "Active",
       password: "",
-      confirmPassword: "",
+      requirePasswordChange: false,
     },
   })
 
   function getFirstError(errors: FieldErrors<z.infer<typeof formSchema>>) {
-    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'role', 'status', 'password', 'confirmPassword'];
+    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'role', 'status', 'password', 'requirePasswordChange'];
     for (const field of fieldOrder) {
       if (errors[field]) {
         return field;
@@ -193,48 +190,47 @@ export function AddUserForm() {
                             </FormItem>
                         )}
                     />
+                    <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Password</FormLabel>
+                            <FormControl>
+                                <div className="relative">
+                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'password' && "border-destructive ring-2 ring-destructive/20")} />
+                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </button>
+                                </div>
+                            </FormControl>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-6">
-                    <FormField
+                 <FormField
                     control={form.control}
-                    name="password"
+                    name="requirePasswordChange"
                     render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Password</FormLabel>
+                      <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
                         <FormControl>
-                            <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'password' && "border-destructive ring-2 ring-destructive/20")} />
-                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
-                            </div>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
                         </FormControl>
-                        <FormMessage />
-                        </FormItem>
+                        <div className="space-y-1 leading-none">
+                          <FormLabel>
+                            Require password change on next login
+                          </FormLabel>
+                        </div>
+                      </FormItem>
                     )}
-                    />
-                    <FormField
-                    control={form.control}
-                    name="confirmPassword"
-                    render={({ field }) => (
-                        <FormItem>
-                        <FormLabel>Confirm Password</FormLabel>
-                        <FormControl>
-                            <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'confirmPassword' && "border-destructive ring-2 ring-destructive/20")} />
-                            <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
-                                {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            </button>
-                            </div>
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                    )}
-                    />
-                </div>
+                  />
+
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
