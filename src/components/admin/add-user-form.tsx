@@ -50,8 +50,8 @@ export function AddUserForm() {
       email: "",
       role: "User",
       status: "Active",
-      password: "",
-      isChangePassword: false,
+      password: "password123",
+      isChangePassword: true,
     },
   })
 
