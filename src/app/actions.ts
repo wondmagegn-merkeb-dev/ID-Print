@@ -2,12 +2,32 @@
 
 import { PDFExtract } from 'pdf.js-extract';
 import type { IdData } from '@/ai/flow';
+import { PDFDocument } from 'pdf-lib';
 
 export type FileInput = {
   name: string;
   type: string;
   base64Data: string;
 };
+
+export async function mergePdfs(files: FileInput[]): Promise<string> {
+    const mergedPdf = await PDFDocument.create();
+
+    for (const file of files) {
+        if (file.type === 'application/pdf') {
+            const pdfBytes = Buffer.from(file.base64Data, 'base64');
+            const pdf = await PDFDocument.load(pdfBytes);
+            const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+            copiedPages.forEach((page) => {
+                mergedPdf.addPage(page);
+            });
+        }
+    }
+
+    const mergedPdfBytes = await mergedPdf.save();
+    return Buffer.from(mergedPdfBytes).toString('base64');
+}
+
 
 async function extractTextFromPdf(base64Data: string): Promise<string> {
   const fileBuffer = Buffer.from(base64Data, 'base64');

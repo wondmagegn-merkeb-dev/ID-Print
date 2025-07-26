@@ -12,13 +12,26 @@ type ImpositionPreviewProps = {
 };
 
 export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps) {
+  // Since we process a single merged PDF, we'll take the first data element
+  // which contains all the text and split it to simulate multiple cards.
+  const allText = data[0]?.rawText || "";
+  const textChunks = allText.split(/\s*\n\s*\n\s*/).filter(Boolean); // Split by blank lines
+
+  const cardData: IdData[] = textChunks.map((chunk, index) => ({
+    fileName: `ID ${index + 1}`,
+    rawText: chunk,
+    name: `ID ${index + 1} from Merged PDF`,
+    dateOfBirth: 'N/A',
+    otherDetails: chunk,
+  }));
+
   const cardsPerPage = 4;
-  const numPages = Math.ceil(data.length / cardsPerPage);
+  const numPages = Math.ceil(cardData.length / cardsPerPage);
 
   const pages = Array.from({ length: numPages }, (_, i) => {
     const start = i * cardsPerPage;
     const end = start + cardsPerPage;
-    return data.slice(start, end);
+    return cardData.slice(start, end);
   });
 
   const generateExportHtml = () => {
@@ -50,12 +63,12 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
       // Fronts page
       html += `<div class="page"><h2>Page ${pageIndex * 2 + 1} - Fronts</h2><div class="grid">`;
       for (let i = 0; i < 4; i++) {
-        const cardData = pageData[i];
-        if (cardData) {
+        const cardDataItem = pageData[i];
+        if (cardDataItem) {
           html += `<div class="card-container">
             <div class="card-header"><span class="card-title">PDF Document</span></div>
             <div class="card-content">
-              <div><p class="detail-label">File Name</p><p class="detail-value" style="word-break: break-all;">${cardData.name || 'N/A'}</p></div>
+              <div><p class="detail-label">File Name</p><p class="detail-value" style="word-break: break-all;">${cardDataItem.name || 'N/A'}</p></div>
             </div>
             <div class="card-footer"></div>
           </div>`;
@@ -68,10 +81,10 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
       // Backs page
       html += `<div class="page"><h2>Page ${pageIndex * 2 + 2} - Backs</h2><div class="grid">`;
       for (let i = 0; i < 4; i++) {
-        const cardData = pageData[i];
-        if (cardData) {
+        const cardDataItem = pageData[i];
+        if (cardDataItem) {
           // Escape HTML characters from the raw text to prevent issues in the export
-          const escapedText = cardData.otherDetails.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          const escapedText = (cardDataItem.otherDetails || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           html += `<div class="card-container">
             <div class="card-header"><span class="card-title">Extracted Text</span></div>
             <div class="card-content">
@@ -107,7 +120,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
     <div>
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
-          <h1 className="font-headline text-4xl font-bold text-primary/90">Preview & Export</h1>
+          <h1 className="font-headline text-4xl font-bold text-primary/90">Step 3: Preview & Export</h1>
           <p className="text-muted-foreground mt-1">
             Review the generated layout below. You can export the result as a Word document.
           </p>
@@ -156,6 +169,11 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
             </div>
           </React.Fragment>
         ))}
+        {pages.length === 0 && (
+            <div className="text-center py-12">
+                <p className="text-muted-foreground">No text could be extracted from the merged PDF.</p>
+            </div>
+        )}
       </div>
     </div>
   );

@@ -11,18 +11,23 @@ import {
   Trash2,
   XCircle,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  FileSignature,
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { FileUploader } from './id-batcher/file-uploader';
 import { ImpositionPreview } from './id-batcher/imposition-preview';
 import type { IdData } from '@/ai/flow';
-import { processFiles, FileInput } from '@/app/actions';
+import { processFiles, FileInput, mergePdfs } from '@/app/actions';
+import { MergedPdfPreview } from './id-batcher/merged-pdf-preview';
+
 
 type FileWithPreview = {
   file: File;
   preview: string;
 };
+
+type Step = 'upload' | 'preview_merged' | 'preview_ids';
 
 function fileToBase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -37,14 +42,9 @@ function fileToBase64(file: File): Promise<string> {
     });
 }
 
-
-export function IdBatcher() {
+function UploadStep({ onFilesMerged, isProcessing }: { onFilesMerged: (mergedPdfBase64: string) => void; isProcessing: boolean }) {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
-  const [extractedData, setExtractedData] = useState<IdData[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
-  
   const [currentPage, setCurrentPage] = useState(1);
   const FILES_PER_PAGE = 5;
 
@@ -71,19 +71,16 @@ export function IdBatcher() {
       return newFiles;
     });
   };
-
-  const handleProcess = async () => {
+  
+  const handleMerge = async () => {
     if (files.length === 0) {
       toast({
         variant: 'destructive',
         title: 'No files selected',
-        description: 'Please upload at least one PDF to process.',
+        description: 'Please upload at least one PDF to merge.',
       });
       return;
     }
-
-    setIsProcessing(true);
-    setError(null);
 
     try {
         const fileInputs: FileInput[] = await Promise.all(
@@ -98,28 +95,17 @@ export function IdBatcher() {
             })
         );
         
-        const data = await processFiles(fileInputs);
-        
-        setExtractedData(data);
-        setFiles([]);
+        const mergedPdfBase64 = await mergePdfs(fileInputs);
+        onFilesMerged(mergedPdfBase64);
+
     } catch (e) {
       const error = e as Error;
-      setError(error.message || 'An error occurred during processing.');
       toast({
         variant: 'destructive',
-        title: 'Processing Error',
-        description: error.message || 'Could not process all files.',
+        title: 'Merging Error',
+        description: error.message || 'Could not merge PDFs.',
       });
-    } finally {
-      setIsProcessing(false);
     }
-  };
-
-  const handleStartOver = () => {
-    setExtractedData([]);
-    setFiles([]);
-    setError(null);
-    setCurrentPage(1);
   };
 
   const formatBytes = (bytes: number, decimals = 2) => {
@@ -136,99 +122,169 @@ export function IdBatcher() {
     (currentPage - 1) * FILES_PER_PAGE,
     currentPage * FILES_PER_PAGE
   );
+  
+  return (
+    <div className="max-w-6xl mx-auto">
+        <div className="text-center mb-8">
+            <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary/90">
+            ID Card Processing Made Easy
+            </h1>
+            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
+            Upload your ID PDFs to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
+            </p>
+        </div>
+        
+        <div className="grid md:grid-cols-2 gap-8 items-start">
+          <Card className="shadow-lg">
+            <CardContent className="p-6">
+              <FileUploader onFilesAdded={handleFiles} disabled={isProcessing} />
+            </CardContent>
+          </Card>
+
+          <div className="space-y-4">
+              {files.length > 0 ? (
+                  <>
+                      <h2 className="text-xl font-semibold font-headline">Ready to Merge ({files.length})</h2>
+                      <ul className="space-y-3 min-h-[290px]">
+                          {paginatedFiles.map((fileWithPreview, index) => (
+                              <li key={index} className="flex items-center justify-between p-3 bg-card rounded-lg shadow-sm border animate-in fade-in slide-in-from-bottom-2">
+                                  <div className="flex items-center gap-4 overflow-hidden">
+                                      <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-md shrink-0">
+                                          <FileText className="w-6 h-6 text-muted-foreground" />
+                                      </div>
+                                      <div className="overflow-hidden">
+                                          <p className="font-medium text-sm truncate">{fileWithPreview.file.name}</p>
+                                          <p className="text-xs text-muted-foreground">{formatBytes(fileWithPreview.file.size)}</p>
+                                      </div>
+                                  </div>
+                                  <Button variant="ghost" size="icon" onClick={() => removeFile(index)} disabled={isProcessing}>
+                                      <Trash2 className="w-4 h-4 text-destructive" />
+                                  </Button>
+                              </li>
+                          ))}
+                      </ul>
+                      {totalPages > 1 && (
+                          <div className="flex justify-between items-center pt-2">
+                              <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                                  <ChevronLeft className="mr-1 h-4 w-4" />
+                                  Previous
+                              </Button>
+                              <span className="text-sm text-muted-foreground">
+                                  Page {currentPage} of {totalPages}
+                              </span>
+                              <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                                  Next
+                                  <ChevronRight className="ml-1 h-4 w-4" />
+                              </Button>
+                          </div>
+                      )}
+                  </>
+              ) : (
+                  <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg h-full">
+                      <p className="text-muted-foreground">Uploaded files will appear here.</p>
+                  </div>
+              )}
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Button onClick={handleMerge} disabled={isProcessing || files.length === 0} size="lg">
+            {isProcessing ? (
+              <>
+                <LoaderCircle className="animate-spin" />
+                Merging...
+              </>
+            ) : (
+              <>
+                <FileSignature />
+                Merge {files.length > 0 ? `${files.length} PDF(s)` : 'PDFs'}
+              </>
+            )}
+          </Button>
+        </div>
+      </div>
+  )
+}
+
+export function IdBatcher() {
+  const [step, setStep] = useState<Step>('upload');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
+  
+  const [mergedPdf, setMergedPdf] = useState<string | null>(null);
+  const [extractedData, setExtractedData] = useState<IdData[]>([]);
+
+  const handleFilesMerged = (mergedPdfBase64: string) => {
+    setMergedPdf(mergedPdfBase64);
+    setStep('preview_merged');
+    setIsProcessing(false);
+  }
+
+  const handleGenerateIds = async () => {
+    if (!mergedPdf) {
+        toast({
+            variant: 'destructive',
+            title: 'No merged PDF',
+            description: 'Something went wrong, please start over.',
+        });
+        return;
+    }
+    setIsProcessing(true);
+    setError(null);
+    try {
+        const fileInput: FileInput = {
+            name: 'merged.pdf',
+            type: 'application/pdf',
+            base64Data: mergedPdf,
+        };
+        const data = await processFiles([fileInput]);
+        setExtractedData(data);
+        setStep('preview_ids');
+    } catch (e) {
+        const error = e as Error;
+        setError(error.message || 'An error occurred during processing.');
+        toast({
+            variant: 'destructive',
+            title: 'Processing Error',
+            description: error.message || 'Could not process the merged file.',
+        });
+    } finally {
+        setIsProcessing(false);
+    }
+  }
+
+  const handleStartOver = () => {
+    setStep('upload');
+    setMergedPdf(null);
+    setExtractedData([]);
+    setError(null);
+    setIsProcessing(false);
+  };
+  
+  const renderStep = () => {
+    switch(step) {
+      case 'upload':
+        return <UploadStep onFilesMerged={handleFilesMerged} isProcessing={isProcessing} />;
+      case 'preview_merged':
+        if (!mergedPdf) return null;
+        return <MergedPdfPreview pdfBase64={mergedPdf} onGenerate={handleGenerateIds} onStartOver={handleStartOver} isProcessing={isProcessing} />;
+      case 'preview_ids':
+        return <ImpositionPreview data={extractedData} onStartOver={handleStartOver} />;
+      default:
+        return <UploadStep onFilesMerged={handleFilesMerged} isProcessing={isProcessing} />;
+    }
+  }
 
   return (
     <>
-        {extractedData.length > 0 ? (
-          <ImpositionPreview data={extractedData} onStartOver={handleStartOver} />
-        ) : (
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-8">
-                <h1 className="font-headline text-4xl md:text-5xl font-bold text-primary/90">
-                ID Card Processing Made Easy
-                </h1>
-                <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">
-                Upload your ID PDFs to automatically format them for printing. Merge multiple IDs into a standardized A4 layout effortlessly.
-                </p>
-            </div>
-            
-            <div className="grid md:grid-cols-2 gap-8 items-start">
-              <Card className="shadow-lg">
-                <CardContent className="p-6">
-                  <FileUploader onFilesAdded={handleFiles} disabled={isProcessing} />
-                  {error && (
-                    <div className="mt-4 flex items-center gap-2 text-destructive text-sm font-medium">
-                      <XCircle className="w-4 h-4" />
-                      <p>{error}</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              <div className="space-y-4">
-                  {files.length > 0 ? (
-                      <>
-                          <h2 className="text-xl font-semibold font-headline">Ready to Process ({files.length})</h2>
-                          <ul className="space-y-3 min-h-[290px]">
-                              {paginatedFiles.map((fileWithPreview, index) => (
-                                  <li key={index} className="flex items-center justify-between p-3 bg-card rounded-lg shadow-sm border animate-in fade-in slide-in-from-bottom-2">
-                                      <div className="flex items-center gap-4 overflow-hidden">
-                                          <div className="w-10 h-10 flex items-center justify-center bg-muted rounded-md shrink-0">
-                                              <FileText className="w-6 h-6 text-muted-foreground" />
-                                          </div>
-                                          <div className="overflow-hidden">
-                                              <p className="font-medium text-sm truncate">{fileWithPreview.file.name}</p>
-                                              <p className="text-xs text-muted-foreground">{formatBytes(fileWithPreview.file.size)}</p>
-                                          </div>
-                                      </div>
-                                      <Button variant="ghost" size="icon" onClick={() => removeFile(index)} disabled={isProcessing}>
-                                          <Trash2 className="w-4 h-4 text-destructive" />
-                                      </Button>
-                                  </li>
-                              ))}
-                          </ul>
-                          {totalPages > 1 && (
-                              <div className="flex justify-between items-center pt-2">
-                                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
-                                      <ChevronLeft className="mr-1 h-4 w-4" />
-                                      Previous
-                                  </Button>
-                                  <span className="text-sm text-muted-foreground">
-                                      Page {currentPage} of {totalPages}
-                                  </span>
-                                  <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
-                                      Next
-                                      <ChevronRight className="ml-1 h-4 w-4" />
-                                  </Button>
-                              </div>
-                          )}
-                      </>
-                  ) : (
-                      <div className="flex flex-col items-center justify-center text-center p-8 border-2 border-dashed rounded-lg h-full">
-                          <p className="text-muted-foreground">Uploaded files will appear here.</p>
-                      </div>
-                  )}
-              </div>
-            </div>
-
-
-            <div className="mt-8 flex justify-center">
-              <Button onClick={handleProcess} disabled={isProcessing || files.length === 0} size="lg">
-                {isProcessing ? (
-                  <>
-                    <LoaderCircle className="animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <ScanLine />
-                    Process {files.length > 0 ? `${files.length} file(s)` : 'Files'}
-                  </>
-                )}
-              </Button>
-            </div>
-          </div>
-        )}
-      </>
+      {error && (
+        <div className="mb-4 flex items-center gap-2 text-destructive text-sm font-medium bg-destructive/10 p-3 rounded-md">
+          <XCircle className="w-4 h-4" />
+          <p>{error}</p>
+        </div>
+      )}
+      {renderStep()}
+    </>
   );
 }
