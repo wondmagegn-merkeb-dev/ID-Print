@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import NextLink from "next/link"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
@@ -539,6 +540,7 @@ const SidebarMenuButton = React.forwardRef<
     asChild?: boolean
     isActive?: boolean
     tooltip?: string | React.ComponentProps<typeof TooltipContent>
+    href?: string
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(
   (
@@ -549,16 +551,24 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       tooltip,
       className,
+      href,
       ...props
     },
     ref
   ) => {
-    const Comp = asChild ? Slot : "button"
     const { isMobile, state } = useSidebar()
+    const isLink = !!href
+
+    // We can't use asChild for the Link component because of the ref.
+    const Comp = isLink ? NextLink : asChild ? Slot : "button"
+    
+    // We need to pass the ref to the correct element.
+    const buttonRef = ref as React.Ref<HTMLAnchorElement> & React.Ref<HTMLButtonElement>
 
     const button = (
       <Comp
-        ref={ref}
+        ref={buttonRef}
+        href={href!}
         data-sidebar="menu-button"
         data-size={size}
         data-active={isActive}
@@ -591,6 +601,7 @@ const SidebarMenuButton = React.forwardRef<
   }
 )
 SidebarMenuButton.displayName = "SidebarMenuButton"
+
 
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
