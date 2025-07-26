@@ -20,13 +20,31 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
   const allText = data[0]?.rawText || "";
   const textChunks = allText.split(/\s*\n\s*\n\s*/).filter(Boolean); // Split by blank lines
 
-  const cardData: IdData[] = textChunks.map((chunk, index) => ({
+  let cardData: IdData[] = textChunks.map((chunk, index) => ({
     fileName: `ID ${index + 1}`,
     rawText: chunk,
     name: `ID ${index + 1} from Merged PDF`,
     dateOfBirth: 'N/A',
     otherDetails: chunk,
   }));
+
+  // To better demonstrate multi-page layout, add placeholder cards if there aren't many.
+  // We want to show at least, say, 10 cards to generate 3 pages.
+  const minimumCardsForDemo = 10;
+  if (cardData.length > 0 && cardData.length < minimumCardsForDemo) {
+      const placeholdersNeeded = minimumCardsForDemo - cardData.length;
+      for (let i = 0; i < placeholdersNeeded; i++) {
+          const placeholderIndex = cardData.length + i + 1;
+          cardData.push({
+              fileName: `Placeholder ${placeholderIndex}`,
+              rawText: 'This is placeholder text for layout demonstration purposes.',
+              name: `Placeholder ID ${placeholderIndex}`,
+              dateOfBirth: 'N/A',
+              otherDetails: 'This is placeholder text for layout demonstration purposes. It will not be exported.',
+          });
+      }
+  }
+
 
   const cardsPerPage = 4;
   const numPages = Math.ceil(cardData.length / cardsPerPage);
@@ -36,8 +54,23 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
     const end = start + cardsPerPage;
     return cardData.slice(start, end);
   });
-
+  
   const generateExportHtml = () => {
+    // We only want to export the real data, not the placeholders.
+    const exportableCardData = textChunks.map((chunk, index) => ({
+        fileName: `ID ${index + 1}`,
+        rawText: chunk,
+        name: `ID ${index + 1} from Merged PDF`,
+        dateOfBirth: 'N/A',
+        otherDetails: chunk,
+    }));
+    const exportableNumPages = Math.ceil(exportableCardData.length / cardsPerPage);
+    const exportablePages = Array.from({ length: exportableNumPages }, (_, i) => {
+        const start = i * cardsPerPage;
+        const end = start + cardsPerPage;
+        return exportableCardData.slice(start, end);
+    });
+
     let html = `
       <!DOCTYPE html>
       <html>
@@ -62,7 +95,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
       <body>
     `;
 
-    pages.forEach((pageData, pageIndex) => {
+    exportablePages.forEach((pageData, pageIndex) => {
       html += `<div class="page"><h2>Page ${pageIndex + 1}</h2><div class="grid">`;
       for (let i = 0; i < cardsPerPage; i++) {
         const cardDataItem = pageData[i];
@@ -123,7 +156,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
       const newSession = {
         id: new Date().toISOString(),
         timestamp: Date.now(),
-        cardCount: cardData.length,
+        cardCount: textChunks.length, // Only count real cards
         data,
       };
       
@@ -132,7 +165,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
 
       toast({
         title: 'Batch Saved',
-        description: `This batch of ${cardData.length} cards has been saved for 30 days.`,
+        description: `This batch of ${textChunks.length} cards has been saved for 30 days.`,
       });
     } catch (error) {
       console.error('Failed to save session to localStorage:', error);
