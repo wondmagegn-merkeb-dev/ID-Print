@@ -80,6 +80,11 @@ export default function AdminSubscriptionsPage() {
     (currentPage - 1) * SUBSCRIPTIONS_PER_PAGE,
     currentPage * SUBSCRIPTIONS_PER_PAGE
   );
+  
+  const handleAction = (action: string, subId: string) => {
+    alert(`${action} action triggered for subscription ${subId}`);
+  };
+
 
   return (
     <div className="grid gap-6">
@@ -131,8 +136,8 @@ export default function AdminSubscriptionsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>Cancel Subscription</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleAction('View Details', sub.id); }}>View Details</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleAction('Cancel Subscription', sub.id); }}>Cancel Subscription</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

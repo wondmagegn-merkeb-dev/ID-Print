@@ -64,6 +64,11 @@ export default function AdminPaymentsPage() {
     (currentPage - 1) * PAYMENTS_PER_PAGE,
     currentPage * PAYMENTS_PER_PAGE
   );
+  
+  const handleAction = (action: string, paymentId: string) => {
+    alert(`${action} action triggered for payment ${paymentId}`);
+  };
+
 
   return (
     <div className="grid gap-6">
@@ -121,9 +126,9 @@ export default function AdminPaymentsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem>View User</DropdownMenuItem>
-                        <DropdownMenuItem>Refund</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleAction('View Details', payment.id); }}>View Details</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleAction('View User', payment.id); }}>View User</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleAction('Refund', payment.id); }}>Refund</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

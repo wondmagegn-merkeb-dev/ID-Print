@@ -37,10 +37,11 @@ export default function AdminPackagesPage() {
   const [plans, setPlans] = useState(initialPlans);
 
   const handleDelete = (planName: string) => {
-    setPlans(plans.filter(p => p.name !== planName));
+    if (window.confirm(`Are you sure you want to delete the ${planName} package?`)) {
+        setPlans(plans.filter(p => p.name !== planName));
+    }
   }
   
-  // Add/Edit functions would open a dialog/modal in a real app
   const handleAdd = () => alert('This would open a dialog to add a new package.');
   const handleEdit = (planName: string) => alert(`This would open a dialog to edit the ${planName} package.`);
 
@@ -87,8 +88,8 @@ export default function AdminPackagesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(plan.name)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(plan.name)} className="text-destructive">Delete</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleEdit(plan.name); }}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleDelete(plan.name); }} className="text-destructive">Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
