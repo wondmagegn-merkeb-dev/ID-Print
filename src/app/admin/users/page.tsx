@@ -1,4 +1,6 @@
 
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -6,8 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useState } from 'react';
 
-const users = [
+const initialUsers = [
     {
       id: "usr_1",
       name: "John Doe",
@@ -43,6 +46,17 @@ const users = [
 ];
 
 export default function AdminUsersPage() {
+  const [users, setUsers] = useState(initialUsers);
+
+  const handleDelete = (userId: string) => {
+    setUsers(users.filter(u => u.id !== userId));
+  }
+  
+  // Add/Edit functions would open a dialog/modal in a real app
+  const handleAdd = () => alert('This would open a dialog to add a new user.');
+  const handleEdit = (userId: string) => alert(`This would open a dialog to edit user ${userId}.`);
+
+
   return (
     <div className="grid gap-6">
       <Card>
@@ -52,7 +66,7 @@ export default function AdminUsersPage() {
                 <CardTitle>Manage Users</CardTitle>
                 <CardDescription>A list of all registered users.</CardDescription>
             </div>
-            <Button>
+            <Button onClick={handleAdd}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add New User
             </Button>
@@ -97,9 +111,9 @@ export default function AdminUsersPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEdit(user.id)}>Edit</DropdownMenuItem>
                         <DropdownMenuItem>View Details</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(user.id)} className="text-destructive">Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>

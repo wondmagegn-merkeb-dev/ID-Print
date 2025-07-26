@@ -4,7 +4,35 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { BarChart, Users, FileText } from 'lucide-react';
 
+const users = [
+    {
+      id: "usr_1",
+      name: "John Doe",
+      email: "john.d@example.com",
+      plan: "Pro",
+      signupDate: "2023-10-26",
+      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704a",
+    },
+    {
+      id: "usr_2",
+      name: "Jane Smith",
+      email: "jane.s@example.com",
+      plan: "Basic",
+      signupDate: "2023-10-25",
+      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704b",
+    },
+    {
+      id: "usr_3",
+      name: "Sam Wilson",
+      email: "sam.w@example.com",
+      plan: "Pro",
+      signupDate: "2023-10-24",
+      avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704c",
+    },
+];
+
 export default function AdminDashboardPage() {
+  const recentUsers = users.slice(0, 3);
   return (
     <div className="grid gap-6">
       <div className="grid md:grid-cols-3 gap-6">
@@ -55,24 +83,14 @@ export default function AdminDashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow>
-                <TableCell>John Doe</TableCell>
-                <TableCell>john.d@example.com</TableCell>
-                <TableCell><Badge>Pro</Badge></TableCell>
-                <TableCell className="text-right">2023-10-26</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Jane Smith</TableCell>
-                <TableCell>jane.s@example.com</TableCell>
-                <TableCell><Badge variant="secondary">Basic</Badge></TableCell>
-                <TableCell className="text-right">2023-10-25</TableCell>
-              </TableRow>
-              <TableRow>
-                  <TableCell>Sam Wilson</TableCell>
-                  <TableCell>sam.w@example.com</TableCell>
-                  <TableCell><Badge>Pro</Badge></TableCell>
-                  <TableCell className="text-right">2023-10-24</TableCell>
-              </TableRow>
+              {recentUsers.map((user) => (
+                <TableRow key={user.id}>
+                    <TableCell>{user.name}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell><Badge variant={user.plan === 'Pro' ? 'default' : user.plan === 'Enterprise' ? 'secondary' : 'outline'}>{user.plan}</Badge></TableCell>
+                    <TableCell className="text-right">{user.signupDate}</TableCell>
+                </TableRow>
+              ))}
             </TableBody>
           </Table>
         </CardContent>

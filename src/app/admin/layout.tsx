@@ -74,7 +74,7 @@ export default function AdminLayout({
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-6 sticky top-0 z-30">
+        <header className="flex h-14 items-center gap-4 border-b bg-background/80 round-md backdrop-blur-sm px-6 sticky top-0 z-30">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
                 <h1 className="text-lg font-semibold">{activeItem?.label || 'Admin'}</h1>

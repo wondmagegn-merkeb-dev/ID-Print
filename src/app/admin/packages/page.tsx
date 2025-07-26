@@ -1,16 +1,21 @@
+
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, PlusCircle } from 'lucide-react';
+import { useState } from 'react';
 
-const plans = [
+const initialPlans = [
     {
       name: "Basic",
       price: "$9/month",
       description: "For individuals and small teams.",
       features: "500 extractions/month",
+      popular: false,
     },
     {
       name: "Pro",
@@ -24,10 +29,21 @@ const plans = [
       price: "Custom",
       description: "For large organizations.",
       features: "Unlimited extractions",
+      popular: false,
     },
 ];
 
 export default function AdminPackagesPage() {
+  const [plans, setPlans] = useState(initialPlans);
+
+  const handleDelete = (planName: string) => {
+    setPlans(plans.filter(p => p.name !== planName));
+  }
+  
+  // Add/Edit functions would open a dialog/modal in a real app
+  const handleAdd = () => alert('This would open a dialog to add a new package.');
+  const handleEdit = (planName: string) => alert(`This would open a dialog to edit the ${planName} package.`);
+
   return (
     <div className="grid gap-6">
       <Card>
@@ -37,7 +53,7 @@ export default function AdminPackagesPage() {
                 <CardTitle>Manage Packages</CardTitle>
                 <CardDescription>A list of all subscription packages.</CardDescription>
             </div>
-            <Button>
+            <Button onClick={handleAdd}>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add New Package
             </Button>
@@ -71,8 +87,8 @@ export default function AdminPackagesPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive">Delete</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleEdit(plan.name)}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDelete(plan.name)} className="text-destructive">Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
