@@ -12,14 +12,12 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { User, Phone, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { Card, CardContent, CardFooter } from "../ui/card"
 import { Checkbox } from "../ui/checkbox"
@@ -64,8 +62,6 @@ export function AddUserForm() {
     }
     return undefined;
   }
-
-  const firstError = getFirstError(form.formState.errors);
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -131,10 +127,9 @@ export function AddUserForm() {
                         <FormControl>
                             <div className="relative">
                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="John Doe" {...field} className={cn("pl-10", firstError === 'name' && "border-destructive ring-2 ring-destructive/20")} />
+                            <Input placeholder="John Doe" {...field} className="pl-10" />
                             </div>
                         </FormControl>
-                        <FormMessage />
                         </FormItem>
                     )}
                     />
@@ -147,10 +142,9 @@ export function AddUserForm() {
                         <FormControl>
                             <div className="relative">
                             <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", firstError === 'email' && "border-destructive ring-2 ring-destructive/20")} />
+                            <Input placeholder="your.email@example.com" {...field} className="pl-10" />
                             </div>
                         </FormControl>
-                        <FormMessage />
                         </FormItem>
                     )}
                     />
@@ -163,10 +157,9 @@ export function AddUserForm() {
                         <FormControl>
                             <div className="relative">
                             <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="+251..." {...field} className={cn("pl-10", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} />
+                            <Input placeholder="+251..." {...field} className="pl-10" />
                             </div>
                         </FormControl>
-                        <FormMessage />
                         </FormItem>
                     )}
                     />
@@ -178,7 +171,7 @@ export function AddUserForm() {
                             <FormLabel>Role</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                <SelectTrigger className={cn(firstError === 'role' && "border-destructive ring-2 ring-destructive/20")}>
+                                <SelectTrigger>
                                     <SelectValue placeholder="Select a role" />
                                 </SelectTrigger>
                                 </FormControl>
@@ -187,7 +180,6 @@ export function AddUserForm() {
                                 <SelectItem value="User">User</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -199,7 +191,7 @@ export function AddUserForm() {
                             <FormLabel>Status</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
-                                <SelectTrigger className={cn(firstError === 'status' && "border-destructive ring-2 ring-destructive/20")}>
+                                <SelectTrigger>
                                     <SelectValue placeholder="Select a status" />
                                 </SelectTrigger>
                                 </FormControl>
@@ -208,7 +200,6 @@ export function AddUserForm() {
                                 <SelectItem value="Inactive">Inactive</SelectItem>
                                 </SelectContent>
                             </Select>
-                            <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -221,13 +212,12 @@ export function AddUserForm() {
                             <FormControl>
                                 <div className="relative">
                                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'password' && "border-destructive ring-2 ring-destructive/20")} />
+                                <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className="pl-10 pr-10" />
                                 <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                                 </button>
                                 </div>
                             </FormControl>
-                            <FormMessage />
                             </FormItem>
                         )}
                     />
