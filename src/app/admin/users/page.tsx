@@ -126,9 +126,9 @@ export default function AdminUsersPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleEdit(user.id)}>Edit</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => viewDetails(user.id)}>View Details</DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDelete(user.id)} className="text-destructive">Delete</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleEdit(user.id); }}>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); viewDetails(user.id); }}>View Details</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); handleDelete(user.id); }} className="text-destructive">Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
