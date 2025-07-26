@@ -20,6 +20,7 @@ import { Home, Package, Settings, Users, User, CreditCard, Repeat } from 'lucide
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const menuItems = [
     { href: "/admin/dashboard", icon: Home, label: "Dashboard" },
@@ -86,6 +87,7 @@ export default function AdminLayout({
             <div className="flex-1">
                 <h1 className="text-lg font-semibold">{activeItem?.label || 'Admin'}</h1>
             </div>
+            <ThemeToggle />
         </header>
         <main className="flex-1 p-6">{children}</main>
       </SidebarInset>
