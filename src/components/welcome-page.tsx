@@ -21,12 +21,12 @@ function WelcomeHeader() {
         </div>
         <div className="flex items-center gap-2">
             <ThemeToggle />
-            <div className="flex items-center p-1 rounded-full bg-primary/10 shadow-sm">
-                <Button variant="ghost" size="sm" className="rounded-full hover:bg-accent/50" asChild>
-                <Link href="/auth/signin">Sign In</Link>
+            <div className="flex items-center p-1 rounded-full bg-primary/10 shadow-sm bg-primary/60 text-primary-foreground hover:bg-primary/80">
+                <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10" asChild>
+                  <Link href="/auth/signin">Sign In</Link>
                 </Button>
                 <Button size="sm" className="rounded-full" asChild>
-                <Link href="/auth/signup">Sign Up</Link>
+                  <Link href="/auth/signup">Sign Up</Link>
                 </Button>
             </div>
         </div>
@@ -55,7 +55,7 @@ export function WelcomePage() {
                 <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-in fade-in slide-in-from-bottom-7 duration-1000 delay-300">
                 <Button asChild size="lg" className="shadow-lg shadow-primary/20">
                     <Link href="/auth/signup">
-                    Get Started for Free
+                    Get Started
                     <ArrowRight className="ml-2" />
                     </Link>
                 </Button>
@@ -68,7 +68,7 @@ export function WelcomePage() {
             </div>
             <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
-                <div className='w-full h-auto aspect-[44/40] item-center justify-center relative rounded-2xl bg-transparent transition-transform duration-500 ease-in-out hover:scale-105'>
+                <div className='w-[100%] md:w-[70%] h-auto aspect-[44/40] item-center justify-center relative rounded-2xl bg-transparent transition-transform duration-500 ease-in-out hover:scale-105'>
                   <Image
                     src="/hero-fyda.png"
                     alt="ID Batcher workflow illustration"
