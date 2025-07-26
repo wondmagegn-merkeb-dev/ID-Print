@@ -1,4 +1,6 @@
 
+'use client'
+
 import { AppLogo } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -13,15 +15,26 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '@/components/ui/sidebar';
-import { Home, Settings, Users } from 'lucide-react';
+import { Home, Package, Settings, Users } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import * as React from 'react';
+
+const menuItems = [
+    { href: "/admin/dashboard", icon: Home, label: "Dashboard" },
+    { href: "/admin/users", icon: Users, label: "Users" },
+    { href: "/admin/packages", icon: Package, label: "Packages" },
+    { href: "/admin/settings", icon: Settings, label: "Settings" },
+]
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const activeItem = menuItems.find(item => pathname.startsWith(item.href));
+
   return (
     <SidebarProvider>
       <Sidebar>
@@ -33,24 +46,14 @@ export default function AdminLayout({
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
-            <SidebarMenuItem>
-              <SidebarMenuButton href="/admin/dashboard" isActive>
-                <Home />
-                Dashboard
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton href="#">
-                <Users />
-                Users
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton href="#">
-                <Settings />
-                Settings
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            {menuItems.map((item) => (
+                <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton href={item.href} isActive={pathname === item.href}>
+                        <item.icon />
+                        {item.label}
+                    </SidebarMenuButton>
+                </SidebarMenuItem>
+            ))}
           </SidebarMenu>
         </SidebarContent>
         <SidebarFooter>
@@ -72,7 +75,7 @@ export default function AdminLayout({
         <header className="flex h-14 items-center gap-4 border-b bg-background px-6">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
-                <h1 className="text-lg font-semibold">Dashboard</h1>
+                <h1 className="text-lg font-semibold">{activeItem?.label || 'Admin'}</h1>
             </div>
         </header>
         <main className="flex-1 p-6">{children}</main>
