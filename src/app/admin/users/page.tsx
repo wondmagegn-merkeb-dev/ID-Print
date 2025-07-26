@@ -17,6 +17,7 @@ const initialUsers = [
       email: "john.d@example.com",
       phone: "+251912345678",
       role: "Admin",
+      status: "Active",
       signupDate: "2023-10-26",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704a",
     },
@@ -26,6 +27,7 @@ const initialUsers = [
       email: "jane.s@example.com",
       phone: "+251711223344",
       role: "User",
+      status: "Active",
       signupDate: "2023-10-25",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704b",
     },
@@ -35,6 +37,7 @@ const initialUsers = [
       email: "sam.w@example.com",
       phone: "+251922334455",
       role: "User",
+      status: "Inactive",
       signupDate: "2023-10-24",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704c",
     },
@@ -44,6 +47,7 @@ const initialUsers = [
         email: "alice.j@example.com",
         phone: "+251933445566",
         role: "User",
+        status: "Active",
         signupDate: "2023-10-23",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
     },
@@ -53,6 +57,7 @@ const initialUsers = [
         email: "bob.b@example.com",
         phone: "+251712345678",
         role: "User",
+        status: "Active",
         signupDate: "2023-10-22",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704e",
     },
@@ -62,6 +67,7 @@ const initialUsers = [
         email: "charlie.d@example.com",
         phone: "+251911223344",
         role: "User",
+        status: "Inactive",
         signupDate: "2023-10-21",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704f",
     },
@@ -71,6 +77,7 @@ const initialUsers = [
         email: "diana.p@example.com",
         phone: "+251921345678",
         role: "Admin",
+        status: "Active",
         signupDate: "2023-10-20",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704g",
     },
@@ -80,6 +87,7 @@ const initialUsers = [
         email: "eve.a@example.com",
         phone: "+251733445566",
         role: "User",
+        status: "Active",
         signupDate: "2023-10-19",
         avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704h",
     },
@@ -137,6 +145,7 @@ export default function AdminUsersPage() {
                 <TableHead>User</TableHead>
                 <TableHead>Contact</TableHead>
                 <TableHead>Role</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead>Sign-up Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -159,6 +168,9 @@ export default function AdminUsersPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant={user.role === 'Admin' ? 'default' : 'outline'}>{user.role}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={user.status === 'Active' ? 'default' : 'destructive'}>{user.status}</Badge>
                   </TableCell>
                   <TableCell>{user.signupDate}</TableCell>
                   <TableCell className="text-right">

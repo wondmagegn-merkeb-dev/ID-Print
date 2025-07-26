@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { User, Phone, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { User, Phone, Mail, Lock, Eye, EyeOff, ShieldCheck } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -30,6 +30,7 @@ const formSchema = z.object({
     .regex(/^\+251[79]\d{8}$/, { message: "Phone must be a valid Ethiopian number (+2519... or +2517...)." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   role: z.enum(["Admin", "User"], { required_error: "Please select a role." }),
+  status: z.enum(["Active", "Inactive"], { required_error: "Please select a status." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
@@ -50,13 +51,14 @@ export function AddUserForm() {
       name: "",
       phone: "+251",
       email: "",
+      status: "Active",
       password: "",
       confirmPassword: "",
     },
   })
 
   function getFirstError(errors: FieldErrors<z.infer<typeof formSchema>>) {
-    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'role', 'password', 'confirmPassword'];
+    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'role', 'status', 'password', 'confirmPassword'];
     for (const field of fieldOrder) {
       if (errors[field]) {
         return field;
@@ -164,6 +166,27 @@ export function AddUserForm() {
                                 <SelectContent>
                                 <SelectItem value="Admin">Admin</SelectItem>
                                 <SelectItem value="User">User</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                     <FormField
+                        control={form.control}
+                        name="status"
+                        render={({ field }) => (
+                            <FormItem>
+                            <FormLabel>Status</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                <SelectTrigger className={cn(firstError === 'status' && "border-destructive ring-2 ring-destructive/20")}>
+                                    <SelectValue placeholder="Select a status" />
+                                </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                <SelectItem value="Active">Active</SelectItem>
+                                <SelectItem value="Inactive">Inactive</SelectItem>
                                 </SelectContent>
                             </Select>
                             <FormMessage />
