@@ -4,12 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Download, Redo } from 'lucide-react';
 import { IdCardPreview } from './id-card-preview';
 import React from 'react';
-
-export type IdData = {
-  name: string;
-  dateOfBirth: string;
-  otherDetails: string;
-};
+import type { IdData } from '@/ai/flow';
 
 type ImpositionPreviewProps = {
   data: IdData[];
@@ -38,12 +33,12 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
           body { font-family: sans-serif; }
           .page { width: 180mm; height: 277mm; page-break-after: always; display: flex; flex-direction: column; }
           .grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10mm; flex-grow: 1; }
-          .card-container { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; }
+          .card-container { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; overflow: hidden; display: flex; flex-direction: column; }
           .card-header { display: flex; justify-content: space-between; align-items: center; }
           .card-title { font-weight: bold; font-size: 10px; text-transform: uppercase; color: #1e3a8a; }
-          .card-content { margin-top: 8px; font-size: 12px; }
+          .card-content { margin-top: 8px; font-size: 10px; flex-grow: 1; overflow: hidden; }
           .detail-label { font-size: 8px; color: #6b7280; text-transform: uppercase; font-weight: 600; }
-          .detail-value { font-family: monospace; font-size: 10px; font-weight: bold; word-wrap: break-word; }
+          .detail-value { font-family: monospace; font-size: 10px; font-weight: bold; white-space: pre-wrap; word-wrap: break-word; }
           .card-footer { height: 4px; background: linear-gradient(to right, #3b82f6, #8b5cf6); border-radius: 9999px; margin-top: auto; }
           h2 { font-family: 'Space Grotesk', sans-serif; text-align: center; }
         </style>
@@ -58,10 +53,9 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
         const cardData = pageData[i];
         if (cardData) {
           html += `<div class="card-container">
-            <div class="card-header"><span class="card-title">Official ID Document</span></div>
+            <div class="card-header"><span class="card-title">PDF Document</span></div>
             <div class="card-content">
-              <div><p class="detail-label">Name</p><p class="detail-value">${cardData.name || 'N/A'}</p></div>
-              <div style="margin-top: 8px;"><p class="detail-label">Date of Birth</p><p class="detail-value">${cardData.dateOfBirth || 'N/A'}</p></div>
+              <div><p class="detail-label">File Name</p><p class="detail-value" style="word-break: break-all;">${cardData.name || 'N/A'}</p></div>
             </div>
             <div class="card-footer"></div>
           </div>`;
@@ -76,10 +70,12 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
       for (let i = 0; i < 4; i++) {
         const cardData = pageData[i];
         if (cardData) {
+          // Escape HTML characters from the raw text to prevent issues in the export
+          const escapedText = cardData.otherDetails.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
           html += `<div class="card-container">
-            <div class="card-header"><span class="card-title">Additional Details</span></div>
+            <div class="card-header"><span class="card-title">Extracted Text</span></div>
             <div class="card-content">
-              <div><p class="detail-label">Other Details</p><p class="detail-value">${cardData.otherDetails || 'N/A'}</p></div>
+              <div><p class="detail-label">Content</p><p class="detail-value">${escapedText || 'N/A'}</p></div>
             </div>
             <div class="card-footer"></div>
           </div>`;

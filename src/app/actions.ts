@@ -1,7 +1,7 @@
 'use server';
 
-import { extractIdData } from '@/ai/flow';
 import { PDFExtract } from 'pdf.js-extract';
+import type { IdData } from '@/ai/flow';
 
 export type FileInput = {
   name: string;
@@ -21,40 +21,41 @@ async function extractTextFromPdf(base64Data: string): Promise<string> {
   }
 }
 
-export async function processFiles(files: FileInput[]) {
+export async function processFiles(files: FileInput[]): Promise<IdData[]> {
   const extractionPromises = files.map(async (file) => {
     if (file.type === 'application/pdf') {
       try {
         const textContent = await extractTextFromPdf(file.base64Data);
+        // Without AI, we can't reliably extract specific fields.
+        // We'll return the raw text and some placeholders.
         return {
           fileName: file.name,
-          textContent: textContent,
+          rawText: textContent,
+          name: file.name, // Using filename as a placeholder for name
+          dateOfBirth: 'N/A',
+          otherDetails: textContent, // Put all extracted text here
         };
       } catch (e) {
         console.error(`Error processing ${file.name}:`, e);
         return {
           fileName: file.name,
-          textContent: 'Error extracting text.',
+          rawText: 'Error extracting text.',
+          name: file.name,
+          dateOfBirth: 'N/A',
+          otherDetails: 'Error extracting text.',
         };
       }
     }
     // This case should ideally not be hit if the frontend filters correctly.
     return {
       fileName: file.name,
-      textContent: 'Unsupported file type.',
+      rawText: 'Unsupported file type.',
+      name: file.name,
+      dateOfBirth: 'N/A',
+      otherDetails: 'Unsupported file type.',
     };
   });
 
-  const extractedContents = await Promise.all(extractionPromises);
-  
-  // Now, pass the concatenated text of all documents to the AI flow.
-  const allText = extractedContents.map(c => `--- START OF ${c.fileName} ---\n${c.textContent}\n--- END OF ${c.fileName} ---`).join('\n\n');
-  
-  try {
-    const structuredData = await extractIdData({ documentsText: allText });
-    return structuredData.documents;
-  } catch (error) {
-    console.error("Error processing documents with AI:", error);
-    throw new Error("Failed to process documents with AI.");
-  }
+  const extractedData = await Promise.all(extractionPromises);
+  return extractedData;
 }

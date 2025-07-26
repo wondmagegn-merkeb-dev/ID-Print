@@ -15,7 +15,8 @@ import {
 } from 'lucide-react';
 import React, { useState } from 'react';
 import { FileUploader } from './id-batcher/file-uploader';
-import { ImpositionPreview, IdData } from './id-batcher/imposition-preview';
+import { ImpositionPreview } from './id-batcher/imposition-preview';
+import type { IdData } from '@/ai/flow';
 import { processFiles, FileInput } from '@/app/actions';
 
 type FileWithPreview = {
@@ -99,7 +100,6 @@ export function IdBatcher() {
         
         const data = await processFiles(fileInputs);
         
-        // The processFiles action now returns data in the IdData format directly.
         setExtractedData(data);
         setFiles([]);
     } catch (e) {

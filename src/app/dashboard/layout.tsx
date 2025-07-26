@@ -13,7 +13,7 @@ export default function DashboardLayout({
   return (
     <div className="flex flex-col h-full bg-background">
       <Header credits={credits} onCreditsChanged={setCredits} />
-      <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+      <main className="flex-1 container mx-auto px-4 py-3">{children}</main>
     </div>
   );
 }
