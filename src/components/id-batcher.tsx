@@ -20,6 +20,7 @@ import { ImpositionPreview } from './id-batcher/imposition-preview';
 import type { IdData } from '@/ai/flow';
 import { processFiles, FileInput, mergePdfs } from '@/app/actions';
 import { MergedPdfPreview } from './id-batcher/merged-pdf-preview';
+import { SavedSessions } from './id-batcher/saved-sessions';
 
 
 type FileWithPreview = {
@@ -42,7 +43,15 @@ function fileToBase64(file: File): Promise<string> {
     });
 }
 
-function UploadStep({ onMerge, isProcessing }: { onMerge: (files: FileWithPreview[]) => Promise<void>; isProcessing: boolean }) {
+function UploadStep({ 
+  onMerge, 
+  isProcessing,
+  onLoadSession 
+}: { 
+  onMerge: (files: FileWithPreview[]) => Promise<void>; 
+  isProcessing: boolean;
+  onLoadSession: (data: IdData[]) => void;
+}) {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
   const { toast } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
@@ -178,6 +187,7 @@ function UploadStep({ onMerge, isProcessing }: { onMerge: (files: FileWithPrevie
             )}
           </Button>
         </div>
+        <SavedSessions onLoadSession={onLoadSession} />
       </div>
   )
 }
@@ -263,18 +273,27 @@ export function IdBatcher() {
     setError(null);
     setIsProcessing(false);
   };
+
+  const handleLoadSession = (data: IdData[]) => {
+    setExtractedData(data);
+    setStep('preview_ids');
+    toast({
+      title: 'Session Loaded',
+      description: 'The saved ID batch has been loaded.',
+    });
+  };
   
   const renderStep = () => {
     switch(step) {
       case 'upload':
-        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} />;
+        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} onLoadSession={handleLoadSession} />;
       case 'preview_merged':
         if (!mergedPdf) return null;
         return <MergedPdfPreview pdfBase64={mergedPdf} onGenerate={handleGenerateIds} onStartOver={handleStartOver} isProcessing={isProcessing} />;
       case 'preview_ids':
         return <ImpositionPreview data={extractedData} onStartOver={handleStartOver} />;
       default:
-        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} />;
+        return <UploadStep onMerge={handleMerge} isProcessing={isProcessing} onLoadSession={handleLoadSession} />;
     }
   }
 

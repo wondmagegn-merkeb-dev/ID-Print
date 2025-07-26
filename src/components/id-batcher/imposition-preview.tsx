@@ -1,10 +1,12 @@
+
 "use client";
 
 import { Button } from '@/components/ui/button';
-import { Download, Redo } from 'lucide-react';
+import { Download, Redo, Save } from 'lucide-react';
 import { IdCardPreview } from './id-card-preview';
 import React from 'react';
 import type { IdData } from '@/ai/flow';
+import { useToast } from '@/hooks/use-toast';
 
 type ImpositionPreviewProps = {
   data: IdData[];
@@ -12,6 +14,7 @@ type ImpositionPreviewProps = {
 };
 
 export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps) {
+  const { toast } = useToast();
   // Since we process a single merged PDF, we'll take the first data element
   // which contains all the text and split it to simulate multiple cards.
   const allText = data[0]?.rawText || "";
@@ -116,6 +119,42 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
     URL.revokeObjectURL(url);
   };
 
+  const handleSave = () => {
+    if (data.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: 'Cannot Save Empty Batch',
+        description: 'There is no data to save.',
+      });
+      return;
+    }
+
+    try {
+      const savedSessions = JSON.parse(localStorage.getItem('id-batcher-sessions') || '[]');
+      const newSession = {
+        id: new Date().toISOString(),
+        timestamp: Date.now(),
+        cardCount: cardData.length,
+        data,
+      };
+      
+      savedSessions.push(newSession);
+      localStorage.setItem('id-batcher-sessions', JSON.stringify(savedSessions));
+
+      toast({
+        title: 'Batch Saved',
+        description: `This batch of ${cardData.length} cards has been saved for 30 days.`,
+      });
+    } catch (error) {
+      console.error('Failed to save session to localStorage:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Saving Failed',
+        description: 'Could not save the batch to your browser storage.',
+      });
+    }
+  };
+
   return (
     <div>
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
@@ -128,6 +167,9 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
         <div className="flex gap-2">
           <Button variant="outline" onClick={onStartOver}>
             <Redo /> Start Over
+          </Button>
+          <Button variant="secondary" onClick={handleSave}>
+            <Save /> Save for 30 days
           </Button>
           <Button onClick={handleExport}>
             <Download /> Export to Word
