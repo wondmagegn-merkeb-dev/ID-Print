@@ -165,9 +165,9 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
           </Button>
         </div>
       </div>
-      <div id="preview-content" className="space-y-8">
+      <div id="preview-content" className="space-y-8 flex flex-col items-center">
         {pages.map((pageData, pageIndex) => (
-          <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg">
+          <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg w-full max-w-5xl">
             <h2 className="text-center font-bold mb-4 text-gray-600">
               Page {pageIndex + 1}
             </h2>
