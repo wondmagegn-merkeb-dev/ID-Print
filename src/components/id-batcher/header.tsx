@@ -4,7 +4,7 @@
 import { AppLogo } from '@/components/icons';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { LogOut, User } from 'lucide-react';
+import { CreditCard, LogOut, User } from 'lucide-react';
 import { ThemeToggle } from '../theme-toggle';
 import {
     DropdownMenu,
@@ -67,6 +67,12 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
                     <DropdownMenuItem>
                       <User className="mr-2 h-4 w-4" />
                       <span>Profile</span>
+                    </DropdownMenuItem>
+                   </Link>
+                   <Link href="/packages" passHref>
+                    <DropdownMenuItem>
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      <span>Packages</span>
                     </DropdownMenuItem>
                    </Link>
                    <DropdownMenuSeparator />
