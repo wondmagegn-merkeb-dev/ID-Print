@@ -165,10 +165,10 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
           </Button>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 bg-muted/30 rounded-lg">
-        <div id="preview-content" className="space-y-8 flex flex-col items-center">
+      <div className="flex-1 overflow-auto p-4 bg-muted/30 rounded-lg">
+        <div id="preview-content" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 justify-items-center">
             {pages.map((pageData, pageIndex) => (
-            <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg max-w-5xl">
+            <div key={pageIndex} className="p-4 bg-white shadow-lg rounded-lg w-[210mm] h-[297mm] transform scale-[0.3] md:scale-100 md:origin-top-left">
                 <h2 className="text-center font-bold mb-4 text-gray-600">
                 Page {pageIndex + 1}
                 </h2>
@@ -190,7 +190,7 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
             </div>
             ))}
             {pages.length === 0 && (
-                <div className="text-center py-12">
+                <div className="col-span-full text-center py-12">
                     <p className="text-muted-foreground">No text could be extracted from the merged PDF.</p>
                 </div>
             )}
