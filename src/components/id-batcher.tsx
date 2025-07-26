@@ -16,22 +16,26 @@ import {
 import React, { useState } from 'react';
 import { FileUploader } from './id-batcher/file-uploader';
 import { ImpositionPreview, IdData } from './id-batcher/imposition-preview';
-import { extractTextFromPdf } from '@/app/actions';
+import { processFiles, FileInput } from '@/app/actions';
 
 type FileWithPreview = {
   file: File;
   preview: string;
 };
 
-function arrayBufferToBase64(buffer: ArrayBuffer) {
-  let binary = '';
-  const bytes = new Uint8Array(buffer);
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return window.btoa(binary);
+function fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            const result = reader.result as string;
+            // remove the "data:mime/type;base64," prefix
+            resolve(result.split(',')[1]);
+        };
+        reader.onerror = (error) => reject(error);
+    });
 }
+
 
 export function IdBatcher() {
   const [files, setFiles] = useState<FileWithPreview[]>([]);
@@ -80,43 +84,31 @@ export function IdBatcher() {
     setIsProcessing(true);
     setError(null);
 
-    const dataPromises = files.map(async (fileWithPreview) => {
-      const { file } = fileWithPreview;
-      const fileName = file.name;
-      const name = fileName.substring(0, fileName.lastIndexOf('.')) || fileName;
-
-      let otherDetails = 'Placeholder details for non-PDF file.';
-      
-      if (file.type === 'application/pdf') {
-        try {
-          const buffer = await file.arrayBuffer();
-          const base64Data = arrayBufferToBase64(buffer);
-          const data = await extractTextFromPdf(base64Data);
-          otherDetails = data;
-        } catch (e) {
-          console.error('Error extracting PDF:', e);
-          otherDetails = 'Could not extract text from PDF.';
-        }
-      }
-
-      return {
-        name: name.replace(/[-_]/g, ' '),
-        dateOfBirth: 'N/A',
-        otherDetails: otherDetails || "No content found in PDF.",
-      };
-    });
-
     try {
-      const data = await Promise.all(dataPromises);
-      setExtractedData(data);
-      // setCredits(prev => prev - files.length); // Credits are managed in layout
-      setFiles([]); // Clear files after processing
+        const fileInputs: FileInput[] = await Promise.all(
+            files.map(async (fileWithPreview) => {
+                const { file } = fileWithPreview;
+                const base64Data = await fileToBase64(file);
+                return {
+                    name: file.name,
+                    type: file.type,
+                    base64Data,
+                };
+            })
+        );
+        
+        const data = await processFiles(fileInputs);
+        
+        // The processFiles action now returns data in the IdData format directly.
+        setExtractedData(data);
+        setFiles([]);
     } catch (e) {
-      setError('An error occurred during processing.');
+      const error = e as Error;
+      setError(error.message || 'An error occurred during processing.');
       toast({
         variant: 'destructive',
         title: 'Processing Error',
-        description: 'Could not process all files.',
+        description: error.message || 'Could not process all files.',
       });
     } finally {
       setIsProcessing(false);
