@@ -46,9 +46,30 @@ const initialSubscriptions = [
     status: "Past Due",
     renewsOn: "2024-07-15",
   },
+  {
+    id: "sub_6",
+    user: { name: "Bob Brown", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704e" },
+    plan: "Basic",
+    status: "Active",
+    renewsOn: "2024-08-10",
+  },
+  {
+    id: "sub_7",
+    user: { name: "Charlie Davis", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704g" },
+    plan: "Pro",
+    status: "Active",
+    renewsOn: "2024-08-12",
+  },
+  {
+    id: "sub_8",
+    user: { name: "Diana Prince", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704h" },
+    plan: "Enterprise",
+    status: "Active",
+    renewsOn: "2025-07-20",
+  },
 ];
 
-const SUBSCRIPTIONS_PER_PAGE = 4;
+const SUBSCRIPTIONS_PER_PAGE = 5;
 
 export default function AdminSubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
