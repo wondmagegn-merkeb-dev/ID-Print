@@ -1,8 +1,15 @@
 'use server';
 
-import { PDFExtract } from 'pdf.js-extract';
+import * as pdfjs from 'pdfjs-dist/legacy/build/pdf';
+import type { TextItem } from 'pdfjs-dist/types/src/display/api';
 import type { IdData } from '@/ai/flow';
 import { PDFDocument } from 'pdf-lib';
+
+// Required for pdfjs-dist to work on the server
+if (!pdfjs.GlobalWorkerOptions.workerSrc) {
+  pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@^4.5.136/build/pdf.worker.min.mjs`;
+}
+
 
 export type FileInput = {
   name: string;
@@ -30,17 +37,26 @@ export async function mergePdfs(files: FileInput[]): Promise<string> {
 
 
 async function extractTextFromPdf(base64Data: string): Promise<string> {
-  const fileBuffer = Buffer.from(base64Data, 'base64');
-  const pdfExtractor = new PDFExtract();
-  try {
-    // The empty options object is sometimes required for the library to work correctly with merged PDFs.
-    const data = await pdfExtractor.extract(fileBuffer, {});
-    return data.pages.map(page => page.content.map(c => c.str).join(' ')).join('\n\n');
-  } catch (error) {
-    console.error('Error extracting PDF on server:', error);
-    throw new Error('Failed to extract text from PDF.');
-  }
+    const fileBuffer = Buffer.from(base64Data, 'base64');
+    try {
+        const loadingTask = pdfjs.getDocument(fileBuffer);
+        const pdf = await loadingTask.promise;
+        
+        let fullText = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => (item as TextItem).str).join(' ');
+            fullText += pageText + '\n\n';
+        }
+        return fullText;
+
+    } catch (error) {
+        console.error('Error extracting PDF on server:', error);
+        throw new Error('Failed to extract text from PDF.');
+    }
 }
+
 
 export async function processFiles(files: FileInput[]): Promise<IdData[]> {
   const extractionPromises = files.map(async (file) => {
