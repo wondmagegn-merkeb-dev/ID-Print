@@ -16,7 +16,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Home, Package, Settings, Users } from 'lucide-react';
+import { Home, Package, Settings, Users, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
@@ -34,7 +34,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const activeItem = menuItems.find(item => pathname === item.href);
+  const activeItem = menuItems.find(item => pathname.startsWith(item.href));
 
   return (
     <SidebarProvider>
@@ -49,7 +49,7 @@ export default function AdminLayout({
           <SidebarMenu>
             {menuItems.map((item) => (
                 <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton href={item.href} isActive={pathname === item.href} tooltip={item.label}>
+                    <SidebarMenuButton href={item.href} isActive={pathname.startsWith(item.href)} tooltip={item.label}>
                         <item.icon />
                         <span>{item.label}</span>
                     </SidebarMenuButton>
@@ -66,15 +66,20 @@ export default function AdminLayout({
                 </Avatar>
                 <div className="flex flex-col">
                     <span className="text-sm font-semibold">Admin User</span>
-                    <Link href="/dashboard" className="text-xs text-muted-foreground hover:underline">
-                        Go to App
-                    </Link>
+                     <div className="flex gap-2 text-xs">
+                        <Link href="/admin/profile" className="text-muted-foreground hover:underline">
+                            Profile
+                        </Link>
+                        <Link href="/dashboard" className="text-muted-foreground hover:underline">
+                            Go to App
+                        </Link>
+                    </div>
                 </div>
             </div>
         </SidebarFooter>
       </Sidebar>
       <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-background/80 round-md backdrop-blur-sm px-6 sticky top-0 z-30">
+        <header className="flex h-14 items-center gap-4 border-b bg-background/80 round-md backdrop-blur-sm px-6 sticky top-0 z-30 md:rounded-t-xl">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
                 <h1 className="text-lg font-semibold">{activeItem?.label || 'Admin'}</h1>
