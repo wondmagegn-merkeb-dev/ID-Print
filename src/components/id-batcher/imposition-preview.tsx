@@ -42,11 +42,11 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
         <meta charset="UTF-8">
         <title>ID Batcher Export</title>
         <style>
-          @page { size: A4; margin: 1cm; }
+          @page { size: A4 landscape; margin: 1cm; }
           body { font-family: sans-serif; }
-          .page { width: 180mm; height: 277mm; page-break-after: always; display: flex; flex-direction: column; }
-          .grid { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10mm; flex-grow: 1; }
-          .card-container { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; overflow: hidden; display: flex; flex-direction: column; }
+          .page { width: 277mm; height: 190mm; page-break-after: always; display: flex; flex-direction: column; }
+          .grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10mm; flex-grow: 1; }
+          .card-container { background-color: #ffffff; border: 1px solid #e0e0e0; border-radius: 8px; padding: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); color: #000; overflow: hidden; display: flex; flex-direction: column; height: 54mm; width: 85.6mm; }
           .card-header { display: flex; justify-content: space-between; align-items: center; }
           .card-title { font-weight: bold; font-size: 10px; text-transform: uppercase; color: #1e3a8a; }
           .card-content { margin-top: 8px; font-size: 10px; flex-grow: 1; overflow: hidden; }
@@ -142,12 +142,12 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
               <h2 className="text-center font-bold mb-4 text-gray-600">
                 Page {pageIndex * 2 + 1} - Fronts
               </h2>
-              <div className="grid grid-cols-2 grid-rows-2 gap-4 aspect-[1/1.414] w-full max-w-4xl mx-auto">
+              <div className="grid grid-cols-4 gap-4 w-full max-w-6xl mx-auto">
                 {Array.from({ length: 4 }).map((_, i) =>
                   pageData[i] ? (
                     <IdCardPreview key={`front-${i}`} data={pageData[i]} side="front" />
                   ) : (
-                    <div key={`front-empty-${i}`} className="bg-gray-100 rounded-lg border-dashed border-2"></div>
+                    <div key={`front-empty-${i}`} className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
                   )
                 )}
               </div>
@@ -157,12 +157,12 @@ export function ImpositionPreview({ data, onStartOver }: ImpositionPreviewProps)
               <h2 className="text-center font-bold mb-4 text-gray-600">
                 Page {pageIndex * 2 + 2} - Backs
               </h2>
-              <div className="grid grid-cols-2 grid-rows-2 gap-4 aspect-[1/1.414] w-full max-w-4xl mx-auto">
+              <div className="grid grid-cols-4 gap-4 w-full max-w-6xl mx-auto">
                 {Array.from({ length: 4 }).map((_, i) =>
                   pageData[i] ? (
                     <IdCardPreview key={`back-${i}`} data={pageData[i]} side="back" />
                   ) : (
-                    <div key={`back-empty-${i}`} className="bg-gray-100 rounded-lg border-dashed border-2"></div>
+                    <div key={`back-empty-${i}`} className="bg-gray-100 rounded-lg border-dashed border-2 aspect-[85.6/54]"></div>
                   )
                 )}
               </div>

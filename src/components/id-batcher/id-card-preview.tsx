@@ -32,7 +32,7 @@ export function IdCardPreview({ data, side }: IdCardPreviewProps) {
             </div>
           </>
         ) : (
-          <div>
+          <div className="overflow-y-auto h-full">
             <p className="text-[10px] text-gray-500 uppercase font-semibold">Content</p>
             <p className="font-mono text-xs whitespace-pre-wrap break-words">{backText}</p>
           </div>
