@@ -1,8 +1,12 @@
 
+'use client';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { BarChart, Users, FileText } from 'lucide-react';
+import { BarChart, Users, FileText, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useState } from 'react';
 
 const users = [
     {
@@ -29,10 +33,59 @@ const users = [
       signupDate: "2023-10-24",
       avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704c",
     },
+    {
+        id: "usr_4",
+        name: "Alice Johnson",
+        email: "alice.j@example.com",
+        plan: "Enterprise",
+        signupDate: "2023-10-23",
+        avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704d",
+    },
+    {
+        id: "usr_5",
+        name: "Bob Brown",
+        email: "bob.b@example.com",
+        plan: "Basic",
+        signupDate: "2023-10-22",
+        avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704e",
+    },
+    {
+        id: "usr_6",
+        name: "Charlie Davis",
+        email: "charlie.d@example.com",
+        plan: "Pro",
+        signupDate: "2023-10-21",
+        avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704f",
+    },
+    {
+        id: "usr_7",
+        name: "Diana Prince",
+        email: "diana.p@example.com",
+        plan: "Enterprise",
+        signupDate: "2023-10-20",
+        avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704g",
+    },
+    {
+        id: "usr_8",
+        name: "Eve Adams",
+        email: "eve.a@example.com",
+        plan: "Basic",
+        signupDate: "2023-10-19",
+        avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704h",
+    },
 ];
 
+const USERS_PER_PAGE = 7;
+
 export default function AdminDashboardPage() {
-  const recentUsers = users.slice(0, 3);
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
+  
+  const paginatedUsers = users.slice(
+    (currentPage - 1) * USERS_PER_PAGE,
+    currentPage * USERS_PER_PAGE
+  );
+  
   return (
     <div className="grid gap-6">
       <div className="grid md:grid-cols-3 gap-6">
@@ -83,7 +136,7 @@ export default function AdminDashboardPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentUsers.map((user) => (
+              {paginatedUsers.map((user) => (
                 <TableRow key={user.id}>
                     <TableCell>{user.name}</TableCell>
                     <TableCell>{user.email}</TableCell>
@@ -93,6 +146,21 @@ export default function AdminDashboardPage() {
               ))}
             </TableBody>
           </Table>
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center pt-4">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                    <ChevronLeft className="mr-1 h-4 w-4" />
+                    Previous
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                    Next
+                    <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

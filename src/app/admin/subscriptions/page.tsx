@@ -69,7 +69,7 @@ const initialSubscriptions = [
   },
 ];
 
-const SUBSCRIPTIONS_PER_PAGE = 5;
+const SUBSCRIPTIONS_PER_PAGE = 7;
 
 export default function AdminSubscriptionsPage() {
   const [subscriptions, setSubscriptions] = useState(initialSubscriptions);
@@ -145,23 +145,23 @@ export default function AdminSubscriptionsPage() {
               ))}
             </TableBody>
           </Table>
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center pt-4">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                    <ChevronLeft className="mr-1 h-4 w-4" />
+                    Previous
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                    Next
+                    <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
-      {totalPages > 1 && (
-        <div className="flex justify-between items-center pt-4">
-            <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
-                <ChevronLeft className="mr-1 h-4 w-4" />
-                Previous
-            </Button>
-            <span className="text-sm text-muted-foreground">
-                Page {currentPage} of {totalPages}
-            </span>
-            <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
-                Next
-                <ChevronRight className="ml-1 h-4 w-4" />
-            </Button>
-        </div>
-      )}
     </div>
   );
 }

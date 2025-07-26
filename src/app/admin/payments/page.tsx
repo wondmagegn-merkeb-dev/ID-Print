@@ -51,9 +51,25 @@ const initialPayments = [
     status: "Failed",
     plan: "Basic",
   },
+  {
+    id: "pay_6",
+    user: { name: "Charlie Davis", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704f" },
+    amount: "$29.00",
+    date: "2024-06-28",
+    status: "Paid",
+    plan: "Pro",
+  },
+  {
+    id: "pay_7",
+    user: { name: "Diana Prince", avatar: "https://i.pravatar.cc/150?u=a042581f4e29026704g" },
+    amount: "$299.00",
+    date: "2024-06-27",
+    status: "Paid",
+    plan: "Enterprise (Annual)",
+  },
 ];
 
-const PAYMENTS_PER_PAGE = 4;
+const PAYMENTS_PER_PAGE = 7;
 
 export default function AdminPaymentsPage() {
   const [payments, setPayments] = useState(initialPayments);
@@ -136,9 +152,7 @@ export default function AdminPaymentsPage() {
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-      {totalPages > 1 && (
+          {totalPages > 1 && (
             <div className="flex justify-between items-center pt-4">
                 <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
                     <ChevronLeft className="mr-1 h-4 w-4" />
@@ -152,7 +166,9 @@ export default function AdminPaymentsPage() {
                     <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
             </div>
-        )}
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

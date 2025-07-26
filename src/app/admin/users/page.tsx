@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, PlusCircle } from 'lucide-react';
+import { MoreHorizontal, PlusCircle, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState } from 'react';
 
@@ -93,12 +93,27 @@ const initialUsers = [
     },
 ];
 
+const USERS_PER_PAGE = 7;
+
 export default function AdminUsersPage() {
   const [users, setUsers] = useState(initialUsers);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
+  const paginatedUsers = users.slice(
+    (currentPage - 1) * USERS_PER_PAGE,
+    currentPage * USERS_PER_PAGE
+  );
 
   const handleDelete = (userId: string) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
-      setUsers(users.filter(u => u.id !== userId));
+      const updatedUsers = users.filter(u => u.id !== userId);
+      setUsers(updatedUsers);
+      
+      const newTotalPages = Math.ceil(updatedUsers.length / USERS_PER_PAGE);
+      if (currentPage > newTotalPages) {
+          setCurrentPage(Math.max(1, newTotalPages));
+      }
     }
   }
   
@@ -135,7 +150,7 @@ export default function AdminUsersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {users.map((user) => (
+              {paginatedUsers.map((user) => (
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-3">
@@ -176,6 +191,21 @@ export default function AdminUsersPage() {
               ))}
             </TableBody>
           </Table>
+          {totalPages > 1 && (
+            <div className="flex justify-between items-center pt-4">
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p - 1)} disabled={currentPage === 1}>
+                    <ChevronLeft className="mr-1 h-4 w-4" />
+                    Previous
+                </Button>
+                <span className="text-sm text-muted-foreground">
+                    Page {currentPage} of {totalPages}
+                </span>
+                <Button variant="outline" size="sm" onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage === totalPages}>
+                    Next
+                    <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
