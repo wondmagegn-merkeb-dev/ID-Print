@@ -19,10 +19,13 @@ function WelcomeHeader() {
             </h1>
           </Link>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
+            <Link href="/packages" className='text-sm font-medium text-muted-foreground hover:text-primary transition-colors'>
+                Pricing
+            </Link>
             <ThemeToggle />
-            <div className="flex items-center p-1 rounded-full bg-primary/10 shadow-sm bg-primary/60 text-primary-foreground hover:bg-primary/80">
-                <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10" asChild>
+            <div className="flex items-center p-1 rounded-full bg-primary/10 shadow-sm">
+                <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 text-primary hover:text-primary" asChild>
                   <Link href="/auth/signin">Sign In</Link>
                 </Button>
                 <Button size="sm" className="rounded-full" asChild>
@@ -66,7 +69,7 @@ export function WelcomePage() {
                 </Button>
                 </div>
             </div>
-            <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400">
+            <div className="relative animate-in fade-in zoom-in-50 duration-1000 delay-400 flex justify-center items-center">
                 <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent opacity-10 blur-3xl rounded-full"></div>
                 <div className='w-[100%] md:w-[70%] h-auto aspect-[44/40] item-center justify-center relative rounded-2xl bg-transparent transition-transform duration-500 ease-in-out hover:scale-105'>
                   <Image
