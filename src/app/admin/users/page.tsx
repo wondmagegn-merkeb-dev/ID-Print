@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2, Eye } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { EditUserForm } from '@/components/admin/edit-user-form';
 
 const initialUsers = [
     {
@@ -104,12 +105,15 @@ const initialUsers = [
     },
 ];
 
+type User = typeof initialUsers[0];
+
 const USERS_PER_PAGE = 6;
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState<User[]>(initialUsers);
   const [currentPage, setCurrentPage] = useState(1);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [userToEdit, setUserToEdit] = useState<User | null>(null);
 
   const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
   const paginatedUsers = users.slice(
@@ -129,12 +133,14 @@ export default function AdminUsersPage() {
       setUserToDelete(null); // Reset after deletion
     }
   }
-  
-  const handleEdit = (userId: string) => alert(`This would open a dialog to edit user ${userId}.`);
-  const viewDetails = (userId: string) => alert(`This would show more details for user ${userId}.`);
 
+  const handleUpdateUser = (updatedUser: User) => {
+    setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
+    setUserToEdit(null);
+  }
 
   return (
+    <>
     <AlertDialog>
       <div className="grid gap-6">
         <Card>
@@ -189,13 +195,9 @@ export default function AdminUsersPage() {
                     <TableCell>{user.signupDate}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => handleEdit(user.id)}>
+                          <Button variant="ghost" size="icon" onClick={() => setUserToEdit(user)}>
                               <Pencil className="h-4 w-4" />
                               <span className="sr-only">Edit</span>
-                          </Button>
-                          <Button variant="ghost" size="icon" onClick={() => viewDetails(user.id)}>
-                              <Eye className="h-4 w-4" />
-                              <span className="sr-only">View Details</span>
                           </Button>
                           <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="icon" onClick={() => setUserToDelete(user.id)} className="text-destructive hover:text-destructive">
@@ -244,5 +246,13 @@ export default function AdminUsersPage() {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+    {userToEdit && (
+        <EditUserForm 
+            user={userToEdit}
+            onOpenChange={(isOpen) => !isOpen && setUserToEdit(null)}
+            onUserUpdate={handleUpdateUser}
+        />
+    )}
+    </>
   );
 }
