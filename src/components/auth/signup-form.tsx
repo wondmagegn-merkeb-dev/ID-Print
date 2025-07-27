@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import { User, Phone, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 const formSchema = z.object({
@@ -28,7 +28,8 @@ const formSchema = z.object({
     .regex(/^[79]\d{8}$/, { message: "Phone number must start with 7 or 9." }),
   email: z.string().email({ message: "Please enter a valid email." }),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
-  confirmPassword: z.string()
+  confirmPassword: z.string(),
+  invitedById: z.string().optional(),
 }).refine(data => data.password === data.confirmPassword, {
   message: "Passwords do not match.",
   path: ["confirmPassword"],
@@ -40,6 +41,8 @@ export function SignUpForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const refId = searchParams.get('ref');
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -49,6 +52,7 @@ export function SignUpForm() {
       email: "",
       password: "",
       confirmPassword: "",
+      invitedById: refId || undefined,
     },
   })
 
@@ -64,18 +68,34 @@ export function SignUpForm() {
 
   const firstError = getFirstError(form.formState.errors);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log(values)
-    // Mock API call
-    setTimeout(() => {
-      toast({
-        title: "Account Created",
-        description: "You have successfully signed up.",
-      })
-      setIsLoading(false);
-      router.push('/dashboard');
-    }, 1000);
+    const fullPhoneNumber = `+251${values.phone}`;
+    try {
+        const response = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...values, phone: fullPhoneNumber }),
+        });
+        const result = await response.json();
+        if (!response.ok) {
+            throw new Error(result.message || "An unknown error occurred.");
+        }
+        toast({
+            title: "Account Created",
+            description: "You have successfully signed up.",
+        });
+        router.push('/dashboard');
+    } catch (error) {
+        const e = error as Error;
+        toast({
+            variant: "destructive",
+            title: "Sign-up Failed",
+            description: e.message,
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
 
   function onInvalid(errors: FieldErrors<z.infer<typeof formSchema>>) {

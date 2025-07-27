@@ -10,10 +10,27 @@ const userSchema = z.object({
   email: z.string().email(),
   phone: z.string().min(1),
   password: z.string().min(8),
-  role: z.enum(['Admin', 'User']),
-  status: z.enum(['Active', 'Inactive']),
+  role: z.enum(['Admin', 'User']).optional(),
+  status: z.enum(['Active', 'Inactive']).optional(),
   isChangePassword: z.boolean().optional(),
+  invitedById: z.string().optional(),
 });
+
+export async function GET(req: NextRequest) {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    // Omit passwords from the response
+    const usersWithoutPasswords = users.map(({ password, ...user }) => user);
+    return NextResponse.json(usersWithoutPasswords, { status: 200 });
+  } catch (error) {
+    console.error('User fetch error:', error);
+    return NextResponse.json({ message: 'An internal server error occurred' }, { status: 500 });
+  }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -24,7 +41,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Invalid input', errors: validation.error.formErrors.fieldErrors }, { status: 400 });
     }
     
-    const { name, email, phone, password, role, status, isChangePassword } = validation.data;
+    const { name, email, phone, password, role, status, isChangePassword, invitedById } = validation.data;
 
     const existingUser = await prisma.user.findUnique({
       where: { email },
@@ -35,6 +52,14 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+    
+    let invitedBySource: 'SELF' | 'ADMIN' | 'USER' = 'SELF';
+    if (role === 'Admin' || role === 'User') { // This implies it's from the admin panel
+        invitedBySource = 'ADMIN';
+    } else if (invitedById) {
+        invitedBySource = 'USER';
+    }
+
 
     const newUser = await prisma.user.create({
       data: {
@@ -42,10 +67,15 @@ export async function POST(req: NextRequest) {
         email,
         phone,
         password: hashedPassword,
-        role,
-        status,
+        role: role ?? 'User',
+        status: status ?? 'Active',
         isChangePassword: isChangePassword ?? false,
-        invitedBySource: 'ADMIN', // User created by an admin
+        invitedBySource,
+        ...(invitedById && {
+            invitedBy: {
+                connect: { id: invitedById }
+            }
+        }),
       },
     });
 
@@ -60,6 +90,9 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
     console.error('User creation error:', error);
+    if ((error as any).code === 'P2025' && invitedById) {
+      return NextResponse.json({ message: 'The inviting user does not exist.'}, { status: 400 });
+    }
     return NextResponse.json({ message: 'An internal server error occurred' }, { status: 500 });
   }
 }

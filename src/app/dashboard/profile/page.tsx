@@ -7,16 +7,59 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ExternalLink, Shield } from "lucide-react";
+import { ChevronLeft, ExternalLink, Shield, Copy, Share2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
+import { useToast } from "@/hooks/use-toast";
+
+function ReferralCard({ userId }: { userId: string }) {
+    const { toast } = useToast();
+    const referralLink = `${window.location.origin}/auth/signup?ref=${userId}`;
+    
+    const copyToClipboard = () => {
+        navigator.clipboard.writeText(referralLink).then(() => {
+            toast({
+                title: "Link Copied!",
+                description: "Your referral link has been copied to the clipboard.",
+            });
+        }, (err) => {
+            toast({
+                variant: 'destructive',
+                title: "Failed to Copy",
+                description: "Could not copy the link to your clipboard.",
+            });
+        });
+    };
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>Refer a Friend</CardTitle>
+                <CardDescription>Invite others and earn rewards!</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2">
+                    <Input id="referral-link" value={referralLink} readOnly />
+                    <Button variant="outline" size="icon" onClick={copyToClipboard}>
+                        <Copy className="h-4 w-4" />
+                        <span className="sr-only">Copy link</span>
+                    </Button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                    Share this link with your friends.
+                </p>
+            </CardContent>
+        </Card>
+    )
+}
 
 export default function ProfilePage() {
   const router = useRouter();
   
-  // Mock user and admin state
-  const userEmail = "user@example.com"; // In a real app, this would come from auth state
+  // Mock user and admin state - In a real app, this ID would come from the authenticated user's session
+  const userId = "usr_123_abc"; 
+  const userEmail = "user@example.com"; 
   const isAdmin = userEmail === "admin@example.com";
 
   const creditsUsed = 1250;
@@ -134,6 +177,7 @@ export default function ProfilePage() {
                     </Button>
                 </CardFooter>
             </Card>
+             {!isAdmin && <ReferralCard userId={userId} />}
         </div>
       </div>
     </div>
