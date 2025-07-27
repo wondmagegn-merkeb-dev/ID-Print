@@ -159,7 +159,18 @@ export function AddUserForm() {
                             <div className="relative flex items-center">
                                 <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                                 <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pr-2 border-r border-input">+251</span>
-                                <Input placeholder="912345678" {...field} className="pl-24" />
+                                <Input 
+                                  type="tel"
+                                  placeholder="912345678" 
+                                  {...field} 
+                                  className="pl-24"
+                                  onChange={(e) => {
+                                      const { value } = e.target;
+                                      if (/^\d*$/.test(value)) {
+                                          field.onChange(value);
+                                      }
+                                  }}
+                                />
                             </div>
                         </FormControl>
                         </FormItem>

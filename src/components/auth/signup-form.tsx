@@ -140,7 +140,18 @@ export function SignUpForm() {
                 <div className="relative flex items-center">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pr-2 border-r border-input">+251</span>
-                  <Input placeholder="912345678" {...field} className={cn("pl-24", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input 
+                    type="tel"
+                    placeholder="912345678" 
+                    {...field} 
+                    onChange={(e) => {
+                        const { value } = e.target;
+                        if (/^\d*$/.test(value)) {
+                            field.onChange(value);
+                        }
+                    }}
+                    className={cn("pl-24", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} 
+                  />
                 </div>
               </FormControl>
             </FormItem>
