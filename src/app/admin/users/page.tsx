@@ -161,7 +161,11 @@ export default function AdminUsersPage() {
     }
   }
 
-  const handleRowClick = (userId: string) => {
+  const handleRowClick = (e: React.MouseEvent<HTMLTableRowElement>, userId: string) => {
+    // Only navigate if the click is not on a button or a link inside the action cell
+    if ((e.target as HTMLElement).closest('[data-action-cell]')) {
+      return;
+    }
     router.push(`/admin/users/${userId}`);
   };
 
@@ -197,7 +201,7 @@ export default function AdminUsersPage() {
               </TableHeader>
               <TableBody>
                 {paginatedUsers.map((user) => (
-                  <TableRow key={user.id} onClick={() => handleRowClick(user.id)} className="cursor-pointer">
+                  <TableRow key={user.id} onClick={(e) => handleRowClick(e, user.id)} className="cursor-pointer">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
@@ -218,8 +222,8 @@ export default function AdminUsersPage() {
                       <Badge variant={user.status === 'Active' ? 'default' : 'destructive'}>{user.status}</Badge>
                     </TableCell>
                     <TableCell>{user.signupDate}</TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
+                    <TableCell className="text-right" data-action-cell>
+                      <div className="flex items-center justify-end gap-2">
                           <Button variant="ghost" size="icon" asChild>
                               <Link href={`/admin/users/edit/${user.id}`}>
                                 <Pencil className="h-4 w-4" />
