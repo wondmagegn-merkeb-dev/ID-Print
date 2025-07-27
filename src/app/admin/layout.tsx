@@ -16,9 +16,9 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
-import { Home, Package, Settings, Users, User, CreditCard, Repeat } from 'lucide-react';
+import { Home, Package, Settings, Users, User, CreditCard, Repeat, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 
@@ -37,7 +37,13 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const activeItem = menuItems.find(item => pathname.startsWith(item.href));
+
+  const handleSignOut = () => {
+    // In a real app, you'd clear session/auth tokens here.
+    router.push('/auth/signin');
+  };
 
   return (
     <SidebarProvider>
@@ -73,9 +79,9 @@ export default function AdminLayout({
                         <Link href="/admin/profile" className="text-muted-foreground hover:underline">
                             Profile
                         </Link>
-                        <Link href="/dashboard" className="text-muted-foreground hover:underline">
-                            Go to App
-                        </Link>
+                        <button onClick={handleSignOut} className="text-muted-foreground hover:underline">
+                            Sign Out
+                        </button>
                     </div>
                 </div>
             </div>

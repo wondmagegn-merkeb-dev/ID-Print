@@ -15,6 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { useRouter } from 'next/navigation';
   
 
 type HeaderProps = {
@@ -23,10 +24,16 @@ type HeaderProps = {
 };
 
 export function Header({ credits, onCreditsChanged }: HeaderProps) {
+  const router = useRouter();
   // Mock user state and admin check
   const isLoggedIn = true;
   const userEmail = "user@example.com"; // In a real app, this would come from auth state
   const isAdmin = userEmail === 'admin@example.com';
+
+  const handleSignOut = () => {
+    // In a real app, you'd clear session/auth tokens here.
+    router.push('/auth/signin');
+  };
 
   return (
     <header className="bg-card border-b shadow-sm sticky top-0 z-40">
@@ -84,12 +91,10 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
                     </DropdownMenuItem>
                    </Link>
                    <DropdownMenuSeparator />
-                   <Link href="/auth/signin" passHref>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>Sign Out</span>
                     </DropdownMenuItem>
-                   </Link>
                  </DropdownMenuContent>
                </DropdownMenu>
             ) : (
