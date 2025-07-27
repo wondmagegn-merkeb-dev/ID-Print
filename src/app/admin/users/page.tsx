@@ -113,7 +113,6 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [currentPage, setCurrentPage] = useState(1);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
-  const [userToEdit, setUserToEdit] = useState<User | null>(null);
 
   const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
   const paginatedUsers = users.slice(
@@ -132,11 +131,6 @@ export default function AdminUsersPage() {
       }
       setUserToDelete(null); // Reset after deletion
     }
-  }
-
-  const handleUpdateUser = (updatedUser: User) => {
-    setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
-    setUserToEdit(null);
   }
 
   return (
@@ -195,9 +189,11 @@ export default function AdminUsersPage() {
                     <TableCell>{user.signupDate}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
-                          <Button variant="ghost" size="icon" onClick={() => setUserToEdit(user)}>
-                              <Pencil className="h-4 w-4" />
-                              <span className="sr-only">Edit</span>
+                          <Button variant="ghost" size="icon" asChild>
+                              <Link href={`/admin/users/edit/${user.id}`}>
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit</span>
+                              </Link>
                           </Button>
                           <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="icon" onClick={() => setUserToDelete(user.id)} className="text-destructive hover:text-destructive">
@@ -246,13 +242,6 @@ export default function AdminUsersPage() {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-    {userToEdit && (
-        <EditUserForm 
-            user={userToEdit}
-            onOpenChange={(isOpen) => !isOpen && setUserToEdit(null)}
-            onUserUpdate={handleUpdateUser}
-        />
-    )}
     </>
   );
 }

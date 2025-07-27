@@ -8,6 +8,26 @@ const userUpdateSchema = z.object({
   status: z.enum(['Active', 'Inactive']).optional(),
 });
 
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const { id } = params;
+    const user = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
+
+    const { password: _, ...userResponse } = user;
+    return NextResponse.json(userResponse, { status: 200 });
+
+  } catch (error) {
+    console.error('User fetch error:', error);
+    return NextResponse.json({ message: 'An internal server error occurred' }, { status: 500 });
+  }
+}
+
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const { id } = params;
