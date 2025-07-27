@@ -45,6 +45,7 @@ export async function POST(req: NextRequest) {
         role,
         status,
         isChangePassword: isChangePassword ?? false,
+        invitedBySource: 'ADMIN', // User created by an admin
       },
     });
 

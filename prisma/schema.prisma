@@ -11,32 +11,24 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  phone     String
-  password  String
-  role      Role     @default(User)
-  status    Status   @default(Active)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  isChangePassword Boolean @default(false)
-  forgotPasswordToken String?
-  forgotPasswordTokenExpiry DateTime?
+  id                    String    @id @default(cuid())
+  name                  String
+  email                 String    @unique
+  phone                 String?
+  password              String
+  avatar                String?
+  role                  String    @default("User")
+  status                String    @default("Active")
+  isChangePassword      Boolean   @default(false)
+  referralGiftReceived  Boolean   @default(false)
+  
+  invitedBySource       String    @default("SELF") // "SELF", "ADMIN", "USER"
+  
+  invitedBy             User?     @relation("UserReferrals", fields: [invitedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invitedById           String?
 
-  // Referral fields
-  invitedById              String?
-  invitedBy                User?     @relation("UserReferrals", fields: [invitedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  invitedUsers             User[]    @relation("UserReferrals")
-  referralGiftReceived     Boolean   @default(false)
-}
+  referrals             User[]    @relation("UserReferrals")
 
-enum Role {
-  Admin
-  User
-}
-
-enum Status {
-  Active
-  Inactive
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 }
