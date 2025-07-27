@@ -163,41 +163,22 @@ export default function AdminUsersPage() {
     currentPage * USERS_PER_PAGE
   );
 
-  const confirmDelete = async () => {
+  const confirmDelete = () => {
     if (userToDelete) {
-      try {
-        const response = await fetch(`/api/users/${userToDelete.id}`, {
-            method: 'DELETE',
-        });
-
-        if (!response.ok) {
-            const result = await response.json();
-            throw new Error(result.message || 'Failed to delete user.');
-        }
-
-        const updatedUsers = users.filter(u => u.id !== userToDelete.id);
-        setUsers(updatedUsers);
-        
-        const newTotalPages = Math.ceil(updatedUsers.length / USERS_PER_PAGE);
-        if (currentPage > newTotalPages) {
-            setCurrentPage(Math.max(1, newTotalPages));
-        }
-
-        toast({
-            title: "User Deleted",
-            description: `User ${userToDelete.name} has been permanently deleted.`,
-        });
-
-      } catch (error) {
-          const e = error as Error;
-          toast({
-              variant: "destructive",
-              title: "Error",
-              description: e.message || "An unknown error occurred.",
-          });
-      } finally {
-        setUserToDelete(null); // Reset after deletion
+      const updatedUsers = users.filter(u => u.id !== userToDelete.id);
+      setUsers(updatedUsers);
+      
+      const newTotalPages = Math.ceil(updatedUsers.length / USERS_PER_PAGE);
+      if (currentPage > newTotalPages) {
+          setCurrentPage(Math.max(1, newTotalPages));
       }
+
+      toast({
+          title: "User Deleted",
+          description: `User ${userToDelete.name} has been deleted from the demo data.`,
+      });
+
+      setUserToDelete(null); // Reset after deletion
     }
   }
 
