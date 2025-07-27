@@ -53,24 +53,46 @@ export function SignInForm() {
   
   const firstError = getFirstError(form.formState.errors);
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
-    console.log(values);
-    // Mock API call
-    setTimeout(() => {
-      toast({
-        title: "Sign In Successful",
-        description: "Welcome back!",
-      })
-      setIsLoading(false);
-      
-      // Role-based redirection
-      if (values.email === 'admin@example.com') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/dashboard');
-      }
-    }, 1000);
+    try {
+        const response = await fetch('/api/auth/signin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(values),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || "Sign-in failed.");
+        }
+
+        toast({
+            title: "Sign In Successful",
+            description: "Welcome back!",
+        });
+
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(result));
+
+        // Role-based redirection
+        if (result.role === 'Admin') {
+            router.push('/admin/dashboard');
+        } else {
+            router.push('/dashboard');
+        }
+
+    } catch (error) {
+        const e = error as Error;
+        toast({
+            variant: "destructive",
+            title: "Sign-in Failed",
+            description: e.message
+        });
+    } finally {
+        setIsLoading(false);
+    }
   }
   
   function onInvalid(errors: FieldErrors<z.infer<typeof formSchema>>) {

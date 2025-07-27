@@ -82,9 +82,9 @@ export function SignUpForm() {
         }
         toast({
             title: "Account Created",
-            description: "You have successfully signed up.",
+            description: "You have successfully signed up. Please sign in.",
         });
-        router.push('/dashboard');
+        router.push('/auth/signin');
     } catch (error) {
         const e = error as Error;
         toast({

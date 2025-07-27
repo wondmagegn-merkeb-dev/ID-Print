@@ -40,11 +40,6 @@ export default function AdminLayout({
   const router = useRouter();
   const activeItem = menuItems.find(item => pathname.startsWith(item.href));
 
-  const handleSignOut = () => {
-    // In a real app, you'd clear session/auth tokens here.
-    router.push('/auth/signin');
-  };
-
   return (
     <SidebarProvider>
       <Sidebar side="left" variant="inset" collapsible="icon">
@@ -79,9 +74,6 @@ export default function AdminLayout({
                         <Link href="/admin/profile" className="text-muted-foreground hover:underline">
                             Profile
                         </Link>
-                        <button onClick={handleSignOut} className="text-muted-foreground hover:underline">
-                            Sign Out
-                        </button>
                     </div>
                 </div>
             </div>

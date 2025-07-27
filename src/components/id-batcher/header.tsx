@@ -30,11 +30,6 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
   const userEmail = "user@example.com"; // In a real app, this would come from auth state
   const isAdmin = userEmail === 'admin@example.com';
 
-  const handleSignOut = () => {
-    // In a real app, you'd clear session/auth tokens here.
-    router.push('/auth/signin');
-  };
-
   return (
     <header className="bg-card border-b shadow-sm sticky top-0 z-40">
       <div className="px-4 py-3 flex justify-between items-center">
@@ -90,11 +85,6 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
                       <span>Saved Sessions</span>
                     </DropdownMenuItem>
                    </Link>
-                   <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleSignOut}>
-                      <LogOut className="mr-2 h-4 w-4" />
-                      <span>Sign Out</span>
-                    </DropdownMenuItem>
                  </DropdownMenuContent>
                </DropdownMenu>
             ) : (
