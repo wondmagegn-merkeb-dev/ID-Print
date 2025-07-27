@@ -1,4 +1,6 @@
 
+'use server';
+
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -43,12 +45,20 @@ export async function POST(req: NextRequest) {
     
     const { name, email, phone, password, role, status, isChangePassword, invitedById } = validation.data;
 
-    const existingUser = await prisma.user.findUnique({
+    const existingUserByEmail = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (existingUser) {
+    if (existingUserByEmail) {
       return NextResponse.json({ message: 'User with this email already exists' }, { status: 409 });
+    }
+
+    const existingUserByPhone = await prisma.user.findUnique({
+      where: { phone },
+    });
+
+    if (existingUserByPhone) {
+        return NextResponse.json({ message: 'User with this phone number already exists' }, { status: 409 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);

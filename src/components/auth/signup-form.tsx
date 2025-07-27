@@ -102,7 +102,7 @@ export function SignUpForm() {
     const firstErrorField = getFirstError(errors);
     if (firstErrorField) {
       const errorMessage = errors[firstErrorField]?.message;
-      if (errorMessage && typeof errorMessage === 'string') {
+      if (errorMessage && typeof errorMessage === 'string' && firstErrorField !== 'confirmPassword') {
         toast({
             variant: "destructive",
             title: "Invalid Input",
@@ -125,7 +125,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="John Doe" {...field} className={cn("pl-10", firstError === 'name' && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input placeholder="John Doe" {...field} className={cn("pl-10", form.formState.errors.name && "border-destructive")} />
                 </div>
               </FormControl>
               <FormMessage />
@@ -142,7 +142,7 @@ export function SignUpForm() {
                 <div className="relative flex items-center">
                   <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <span className="absolute left-10 top-1/2 -translate-y-1/2 text-sm text-muted-foreground pr-2 border-r border-input">+251</span>
-                  <Input placeholder="912345678" {...field} className={cn("pl-24", firstError === 'phone' && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input placeholder="912345678" {...field} className={cn("pl-24", form.formState.errors.phone && "border-destructive")} />
                 </div>
               </FormControl>
                <FormMessage />
@@ -158,7 +158,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", firstError === 'email' && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", form.formState.errors.email && "border-destructive")} />
                 </div>
               </FormControl>
                <FormMessage />
@@ -174,7 +174,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'password' && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", form.formState.errors.password && "border-destructive")} />
                   <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -193,7 +193,7 @@ export function SignUpForm() {
               <FormControl>
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", firstError === 'confirmPassword' && "border-destructive ring-2 ring-destructive/20")} />
+                  <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} className={cn("pl-10 pr-10", form.formState.errors.confirmPassword && "border-destructive")} />
                    <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
