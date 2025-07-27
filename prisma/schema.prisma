@@ -10,6 +10,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String
+  password  String
+  role      Role     @default(User)
+  status    Status   @default(Active)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  isChangePassword Boolean @default(false)
+  forgotPasswordToken String?
+  forgotPasswordTokenExpiry DateTime?
+
+  // Referral fields
+  invitedById              String?
+  invitedBy                User?     @relation("UserReferrals", fields: [invitedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invitedUsers             User[]    @relation("UserReferrals")
+  referralGiftReceived     Boolean   @default(false)
+}
+
 enum Role {
   Admin
   User
@@ -18,20 +39,4 @@ enum Role {
 enum Status {
   Active
   Inactive
-}
-
-model User {
-  id                          String    @id @default(cuid())
-  name                        String?
-  email                       String    @unique
-  phone                       String?   @unique
-  password                    String
-  role                        Role      @default(User)
-  status                      Status    @default(Active)
-  forgotPasswordToken         String?
-  forgotPasswordTokenExpiry   DateTime?
-  isChangePassword            Boolean   @default(false)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 }

@@ -20,7 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { EditUserForm } from '@/components/admin/edit-user-form';
+import { useRouter } from 'next/navigation';
 
 const initialUsers = [
     {
@@ -110,6 +110,7 @@ type User = typeof initialUsers[0];
 const USERS_PER_PAGE = 6;
 
 export default function AdminUsersPage() {
+  const router = useRouter();
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [currentPage, setCurrentPage] = useState(1);
   const [userToDelete, setUserToDelete] = useState<string | null>(null);
@@ -133,8 +134,11 @@ export default function AdminUsersPage() {
     }
   }
 
+  const handleRowClick = (userId: string) => {
+    router.push(`/admin/users/${userId}`);
+  };
+
   return (
-    <>
     <AlertDialog>
       <div className="grid gap-6">
         <Card>
@@ -166,7 +170,7 @@ export default function AdminUsersPage() {
               </TableHeader>
               <TableBody>
                 {paginatedUsers.map((user) => (
-                  <TableRow key={user.id}>
+                  <TableRow key={user.id} onClick={() => handleRowClick(user.id)} className="cursor-pointer">
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
                           <Avatar className="h-8 w-8">
@@ -188,7 +192,7 @@ export default function AdminUsersPage() {
                     </TableCell>
                     <TableCell>{user.signupDate}</TableCell>
                     <TableCell className="text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center justify-end gap-2" onClick={(e) => e.stopPropagation()}>
                           <Button variant="ghost" size="icon" asChild>
                               <Link href={`/admin/users/edit/${user.id}`}>
                                 <Pencil className="h-4 w-4" />
@@ -242,6 +246,5 @@ export default function AdminUsersPage() {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-    </>
   );
 }
