@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
-import { User, Phone, Mail, Lock, Eye, EyeOff } from "lucide-react"
+import { User, Phone, Mail, Lock, Eye, EyeOff, Ticket } from "lucide-react"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -27,6 +27,7 @@ const formSchema = z.object({
     .length(9, { message: "Phone number must be exactly 9 digits." })
     .regex(/^[79]\d{8}$/, { message: "Phone number must start with 7 or 9." }),
   email: z.string().email({ message: "Please enter a valid email." }),
+  invitationCode: z.string().optional(),
   password: z.string().min(8, { message: "Password must be at least 8 characters." }),
   confirmPassword: z.string()
 }).refine(data => data.password === data.confirmPassword, {
@@ -47,13 +48,14 @@ export function SignUpForm() {
       name: "",
       phone: "",
       email: "",
+      invitationCode: "",
       password: "",
       confirmPassword: "",
     },
   })
 
   function getFirstError(errors: FieldErrors<z.infer<typeof formSchema>>) {
-    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'password', 'confirmPassword'];
+    const fieldOrder: (keyof z.infer<typeof formSchema>)[] = ['name', 'phone', 'email', 'invitationCode', 'password', 'confirmPassword'];
     for (const field of fieldOrder) {
       if (errors[field]) {
         return field;
@@ -139,6 +141,22 @@ export function SignUpForm() {
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input placeholder="your.email@example.com" {...field} className={cn("pl-10", firstError === 'email' && "border-destructive ring-2 ring-destructive/20")} />
+                </div>
+              </FormControl>
+               <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="invitationCode"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Invitation Code (Optional)</FormLabel>
+              <FormControl>
+                <div className="relative">
+                  <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input placeholder="Enter your code" {...field} className={cn("pl-10", firstError === 'invitationCode' && "border-destructive ring-2 ring-destructive/20")} />
                 </div>
               </FormControl>
                <FormMessage />
