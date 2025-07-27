@@ -64,3 +64,22 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     return NextResponse.json({ message: 'An internal server error occurred' }, { status: 500 });
   }
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  try {
+    const { id } = params;
+
+    await prisma.user.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: 'User deleted successfully' }, { status: 200 });
+
+  } catch (error) {
+    console.error('User deletion error:', error);
+    if ((error as any).code === 'P2025') {
+        return NextResponse.json({ message: 'User not found' }, { status: 404 });
+    }
+    return NextResponse.json({ message: 'An internal server error occurred' }, { status: 500 });
+  }
+}

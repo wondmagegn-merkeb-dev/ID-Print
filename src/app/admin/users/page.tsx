@@ -21,6 +21,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
 
 const initialUsers = [
     {
@@ -111,9 +112,10 @@ const USERS_PER_PAGE = 6;
 
 export default function AdminUsersPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [currentPage, setCurrentPage] = useState(1);
-  const [userToDelete, setUserToDelete] = useState<string | null>(null);
+  const [userToDelete, setUserToDelete] = useState<User | null>(null);
 
   const totalPages = Math.ceil(users.length / USERS_PER_PAGE);
   const paginatedUsers = users.slice(
@@ -121,16 +123,41 @@ export default function AdminUsersPage() {
     currentPage * USERS_PER_PAGE
   );
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (userToDelete) {
-      const updatedUsers = users.filter(u => u.id !== userToDelete);
-      setUsers(updatedUsers);
-      
-      const newTotalPages = Math.ceil(updatedUsers.length / USERS_PER_PAGE);
-      if (currentPage > newTotalPages) {
-          setCurrentPage(Math.max(1, newTotalPages));
+      try {
+        const response = await fetch(`/api/users/${userToDelete.id}`, {
+            method: 'DELETE',
+        });
+
+        if (!response.ok) {
+            const result = await response.json();
+            throw new Error(result.message || 'Failed to delete user.');
+        }
+
+        const updatedUsers = users.filter(u => u.id !== userToDelete.id);
+        setUsers(updatedUsers);
+        
+        const newTotalPages = Math.ceil(updatedUsers.length / USERS_PER_PAGE);
+        if (currentPage > newTotalPages) {
+            setCurrentPage(Math.max(1, newTotalPages));
+        }
+
+        toast({
+            title: "User Deleted",
+            description: `User ${userToDelete.name} has been permanently deleted.`,
+        });
+
+      } catch (error) {
+          const e = error as Error;
+          toast({
+              variant: "destructive",
+              title: "Error",
+              description: e.message || "An unknown error occurred.",
+          });
+      } finally {
+        setUserToDelete(null); // Reset after deletion
       }
-      setUserToDelete(null); // Reset after deletion
     }
   }
 
@@ -200,7 +227,7 @@ export default function AdminUsersPage() {
                               </Link>
                           </Button>
                           <AlertDialogTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => setUserToDelete(user.id)} className="text-destructive hover:text-destructive">
+                              <Button variant="ghost" size="icon" onClick={() => setUserToDelete(user)} className="text-destructive hover:text-destructive">
                                   <Trash2 className="h-4 w-4" />
                                   <span className="sr-only">Delete</span>
                               </Button>
