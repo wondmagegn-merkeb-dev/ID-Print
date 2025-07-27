@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -31,9 +32,9 @@ type User = {
   phone: string;
   role: "Admin" | "User";
   status: "Active" | "Inactive";
-  signupDate: string; // Assuming API returns this as a string
   avatar?: string | null;
   createdAt: string;
+  invitedBySource: 'SELF' | 'ADMIN' | 'USER';
 };
 
 const USERS_PER_PAGE = 6;
@@ -124,11 +125,25 @@ export default function AdminUsersPage() {
     router.push(`/admin/users/${userId}`);
   };
 
+  const getSourceBadgeVariant = (source: User['invitedBySource']) => {
+    switch (source) {
+      case 'ADMIN':
+        return 'secondary';
+      case 'USER':
+        return 'default';
+      case 'SELF':
+      default:
+        return 'outline';
+    }
+  };
+
+
   const renderSkeleton = () => (
     Array.from({ length: USERS_PER_PAGE }).map((_, i) => (
         <TableRow key={`skeleton-${i}`}>
             <TableCell><Skeleton className="h-10 w-40" /></TableCell>
             <TableCell><Skeleton className="h-10 w-48" /></TableCell>
+            <TableCell><Skeleton className="h-8 w-16 rounded-full" /></TableCell>
             <TableCell><Skeleton className="h-8 w-16 rounded-full" /></TableCell>
             <TableCell><Skeleton className="h-8 w-16 rounded-full" /></TableCell>
             <TableCell><Skeleton className="h-6 w-24" /></TableCell>
@@ -163,6 +178,7 @@ export default function AdminUsersPage() {
                   <TableHead>Contact</TableHead>
                   <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
+                  <TableHead>Source</TableHead>
                   <TableHead>Sign-up Date</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -171,9 +187,9 @@ export default function AdminUsersPage() {
                 {isLoading ? (
                     renderSkeleton()
                 ) : error ? (
-                    <TableRow><TableCell colSpan={6} className="text-center h-24 text-destructive">{error}</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="text-center h-24 text-destructive">{error}</TableCell></TableRow>
                 ) : paginatedUsers.length === 0 ? (
-                    <TableRow><TableCell colSpan={6} className="text-center h-24 text-muted-foreground">No users found.</TableCell></TableRow>
+                    <TableRow><TableCell colSpan={7} className="text-center h-24 text-muted-foreground">No users found.</TableCell></TableRow>
                 ) : (
                     paginatedUsers.map((user) => (
                     <TableRow key={user.id} onClick={(e) => handleRowClick(e, user.id)} className="cursor-pointer">
@@ -195,6 +211,11 @@ export default function AdminUsersPage() {
                         </TableCell>
                         <TableCell>
                         <Badge variant={user.status === 'Active' ? 'default' : 'destructive'}>{user.status}</Badge>
+                        </TableCell>
+                        <TableCell>
+                            <Badge variant={getSourceBadgeVariant(user.invitedBySource)}>
+                                {user.invitedBySource}
+                            </Badge>
                         </TableCell>
                         <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                         <TableCell className="text-right" data-action-cell>
