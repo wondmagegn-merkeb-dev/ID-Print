@@ -1,3 +1,4 @@
+
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -49,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     // We don't want to block the response for the email to be sent.
     // In a real-world app, this would be handled by a message queue.
-    sendWelcomeEmail({ name: newUser.name, email: newUser.email }).catch(console.error);
+    // sendWelcomeEmail({ name: newUser.name, email: newUser.email }).catch(console.error);
 
     // Don't send password back in the response
     const { password: _, ...userResponse } = newUser;
