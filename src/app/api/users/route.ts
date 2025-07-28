@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const isAdminCreating = !!role; // Admins can set a role, users signing up cannot.
+    const isAdminCreating = !!role;
 
     const newUser = await prisma.user.create({
       data: {
@@ -53,8 +53,8 @@ export async function POST(req: NextRequest) {
         email,
         phone,
         password: hashedPassword,
-        role: role || 'User', // Default to 'User'
-        status: status || 'Active', // Default to 'Active'
+        ...(role && { role }),
+        ...(status && { status }),
         isChangePassword: isChangePassword ?? false,
         invitedBySource: invitedById ? 'USER' : (isAdminCreating ? 'ADMIN' : 'SELF'),
         invitedById: invitedById || undefined,
