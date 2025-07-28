@@ -4,7 +4,7 @@
 import { AppLogo } from '@/components/icons';
 import { Button } from '../ui/button';
 import Link from 'next/link';
-import { CreditCard, LogOut, User, FolderClock } from 'lucide-react';
+import { CreditCard, LogOut, User, FolderClock, LoaderCircle } from 'lucide-react';
 import { ThemeToggle } from '../theme-toggle';
 import {
     DropdownMenu,
@@ -15,16 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-
-type UserData = {
-    id: string;
-    name: string;
-    email: string;
-    role: "Admin" | "User";
-    avatar?: string | null;
-};
+import { useAuth } from '@/hooks/use-auth';
 
 type HeaderProps = {
   credits: number;
@@ -32,19 +23,10 @@ type HeaderProps = {
 };
 
 export function Header({ credits, onCreditsChanged }: HeaderProps) {
-  const router = useRouter();
-  const [user, setUser] = useState<UserData | null>(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-        setUser(JSON.parse(storedUser));
-    }
-  }, []);
-
+  const { user, logout, isLoading } = useAuth();
+  
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    router.push('/auth/signin');
+    logout();
   };
 
   const isAdmin = user?.role === 'Admin';
@@ -64,9 +46,11 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
             <ThemeToggle />
             <div className="text-right">
                 <div className="text-sm font-medium text-foreground">Usage Credits</div>
-                <div className="text-xs text-muted-foreground">{isAdmin ? "Unlimited" : `${credits} remaining`}</div>
+                <div className="text-xs text-muted-foreground">{isLoading ? '...' : (isAdmin ? "Unlimited" : `${credits} remaining`)}</div>
             </div>
-            {user ? (
+            {isLoading ? (
+                <LoaderCircle className="h-8 w-8 animate-spin text-primary" />
+            ) : user ? (
                  <DropdownMenu>
                  <DropdownMenuTrigger asChild>
                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">

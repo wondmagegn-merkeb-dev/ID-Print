@@ -14,14 +14,7 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-
-type User = {
-    id: string;
-    name: string;
-    email: string;
-    role: "Admin" | "User";
-    avatar?: string | null;
-};
+import { useAuth } from "@/hooks/use-auth";
 
 function ReferralCard({ userId }: { userId: string }) {
     const { toast } = useToast();
@@ -75,7 +68,7 @@ function ReferralCard({ userId }: { userId: string }) {
 function ProfileSkeleton() {
     return (
         <div className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 grid gap-6">
+            <div className="md:col-span-2 grid md:grid-cols-2 gap-6 items-start">
                 <Card>
                     <CardHeader>
                         <CardTitle>Personal Information</CardTitle>
@@ -93,6 +86,29 @@ function ProfileSkeleton() {
                         <div className="space-y-2">
                             <Skeleton className="h-4 w-20" />
                             <Skeleton className="h-10 w-full" />
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-end">
+                        <Skeleton className="h-10 w-36" />
+                    </CardFooter>
+                </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle>Password</CardTitle>
+                        <CardDescription>Change your password.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="space-y-2">
+                             <Skeleton className="h-4 w-24" />
+                             <Skeleton className="h-10 w-full" />
+                        </div>
+                         <div className="space-y-2">
+                             <Skeleton className="h-4 w-24" />
+                             <Skeleton className="h-10 w-full" />
+                        </div>
+                         <div className="space-y-2">
+                             <Skeleton className="h-4 w-24" />
+                             <Skeleton className="h-10 w-full" />
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-end">
@@ -121,17 +137,7 @@ function ProfileSkeleton() {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-        setUser(JSON.parse(storedUser));
-    } else {
-        // Handle case where user is not logged in, maybe redirect
-        router.push('/auth/signin');
-    }
-  }, [router]);
+  const { user, isLoading } = useAuth();
   
   // Mock data for things not in user object yet
   const creditsUsed = 1250;
@@ -154,7 +160,7 @@ export default function ProfilePage() {
       </header>
       <Separator />
 
-      {!user ? <ProfileSkeleton /> : (
+      {isLoading || !user ? <ProfileSkeleton /> : (
         <div className="grid md:grid-cols-3 gap-6">
             <div className="md:col-span-2 grid md:grid-cols-2 gap-6 items-start">
               <Card>
@@ -166,7 +172,7 @@ export default function ProfilePage() {
                   <div className="flex items-center space-x-4">
                       <Avatar className="h-20 w-20">
                       <AvatarImage src={user.avatar ?? "https://i.pravatar.cc/150?u=a042581f4e29026704d"} />
-                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
                       </Avatar>
                       <Button variant="outline">Change Photo</Button>
                   </div>

@@ -18,10 +18,13 @@ import {
 } from '@/components/ui/sidebar';
 import { Home, Package, Settings, Users, User, CreditCard, Repeat, LogOut } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import * as React from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
+import { UserProvider } from '@/context/user-context';
+import { useAuth } from '@/hooks/use-auth';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const menuItems = [
     { href: "/admin/dashboard", icon: Home, label: "Dashboard" },
@@ -32,22 +35,17 @@ const menuItems = [
     { href: "/admin/settings", icon: Settings, label: "Settings" },
 ]
 
-export default function AdminLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function AdminLayoutContent({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const router = useRouter();
+  const { user, logout, isLoading } = useAuth();
   const activeItem = menuItems.find(item => pathname.startsWith(item.href));
 
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    router.push('/auth/signin');
+    logout();
   };
 
   return (
-    <SidebarProvider>
+     <SidebarProvider>
       <Sidebar side="left" variant="inset" collapsible="icon">
         <SidebarHeader>
           <div className="flex items-center gap-2">
@@ -71,18 +69,30 @@ export default function AdminLayout({
         <SidebarFooter>
             <div className="flex items-center justify-between gap-2 p-2">
                 <div className='flex items-center gap-2'>
-                    <Avatar className="h-8 w-8">
-                        <AvatarImage src="https://github.com/shadcn.png" alt="@admin" />
-                        <AvatarFallback>AD</AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                        <span className="text-sm font-semibold">Admin User</span>
-                        <div className="flex gap-2 text-xs">
-                            <Link href="/admin/profile" className="text-muted-foreground hover:underline">
-                                Profile
-                            </Link>
+                    {isLoading ? (
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-8 w-8 rounded-full" />
+                        <div className="flex flex-col gap-1">
+                          <Skeleton className="h-4 w-20" />
+                          <Skeleton className="h-3 w-12" />
                         </div>
-                    </div>
+                      </div>
+                    ) : user ? (
+                       <>
+                        <Avatar className="h-8 w-8">
+                            <AvatarImage src={user.avatar ?? "https://github.com/shadcn.png"} alt={user.name} />
+                            <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                            <span className="text-sm font-semibold">{user.name}</span>
+                            <div className="flex gap-2 text-xs">
+                                <Link href="/admin/profile" className="text-muted-foreground hover:underline">
+                                    Profile
+                                </Link>
+                            </div>
+                        </div>
+                       </>
+                    ) : null}
                 </div>
                 <Button variant="ghost" size="icon" onClick={handleLogout} className="text-sidebar-foreground/70 hover:text-sidebar-foreground">
                     <LogOut className="h-4 w-4" />
@@ -103,4 +113,17 @@ export default function AdminLayout({
       </SidebarInset>
     </SidebarProvider>
   );
+}
+
+
+export default function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+    return (
+        <UserProvider>
+            <AdminLayoutContent>{children}</AdminLayoutContent>
+        </UserProvider>
+    )
 }

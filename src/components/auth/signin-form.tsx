@@ -21,6 +21,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@/hooks/use-auth"
 
 const formSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email." }),
@@ -29,6 +30,7 @@ const formSchema = z.object({
 
 export function SignInForm() {
   const { toast } = useToast()
+  const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
@@ -68,13 +70,12 @@ export function SignInForm() {
             throw new Error(result.message || "Sign-in failed.");
         }
 
+        login(result);
+
         toast({
             title: "Sign In Successful",
             description: "Welcome back!",
         });
-
-        // Store user data in localStorage
-        localStorage.setItem('user', JSON.stringify(result));
 
         // Role-based redirection
         if (result.role === 'Admin') {
