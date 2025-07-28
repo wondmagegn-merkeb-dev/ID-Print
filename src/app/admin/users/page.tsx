@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2, Search } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2, Search, X } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
@@ -26,6 +26,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 type User = {
   id: string;
@@ -56,7 +57,8 @@ export default function AdminUsersPage() {
   const [sortKey, setSortKey] = useState<SortKey>('createdAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [roleFilter, setRoleFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('all');
 
   useEffect(() => {
     async function fetchUsers() {
@@ -86,11 +88,13 @@ export default function AdminUsersPage() {
   
   const filteredUsers = useMemo(() => {
     return users.filter(user =>
-      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      user.phone.toLowerCase().includes(searchQuery.toLowerCase())
+      user.phone.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (roleFilter === 'all' || user.role === roleFilter) &&
+      (statusFilter === 'all' || user.status === statusFilter)
     );
-  }, [users, searchQuery]);
+  }, [users, searchQuery, roleFilter, statusFilter]);
 
   const sortedUsers = useMemo(() => {
     if (!sortKey) return filteredUsers;
@@ -124,7 +128,7 @@ export default function AdminUsersPage() {
     if (currentPage > totalPages && totalPages > 0) {
       setCurrentPage(totalPages);
     }
-  }, [searchQuery, currentPage, totalPages]);
+  }, [searchQuery, roleFilter, statusFilter, currentPage, totalPages]);
 
 
   const handleSort = (key: SortKey) => {
@@ -134,6 +138,13 @@ export default function AdminUsersPage() {
         setSortKey(key);
         setSortDirection('asc');
     }
+    setCurrentPage(1);
+  };
+  
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setRoleFilter('all');
+    setStatusFilter('all');
     setCurrentPage(1);
   };
 
@@ -208,6 +219,8 @@ export default function AdminUsersPage() {
         </TableRow>
     ))
   );
+  
+  const isFiltered = searchQuery !== '' || roleFilter !== 'all' || statusFilter !== 'all';
 
   return (
     <AlertDialog>
@@ -226,14 +239,42 @@ export default function AdminUsersPage() {
                   </Link>
               </Button>
             </div>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input 
-                placeholder="Search users by name, email, or phone..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 w-full"
-              />
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="Search users by name, email, or phone..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 w-full"
+                />
+              </div>
+              <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by Role" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Roles</SelectItem>
+                  <SelectItem value="Admin">Admin</SelectItem>
+                  <SelectItem value="User">User</SelectItem>
+                </SelectContent>
+              </Select>
+               <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+              {isFiltered && (
+                <Button variant="ghost" onClick={handleClearFilters}>
+                  <X className="mr-2 h-4 w-4"/>
+                  Clear
+                </Button>
+              )}
             </div>
           </CardHeader>
           <CardContent>
