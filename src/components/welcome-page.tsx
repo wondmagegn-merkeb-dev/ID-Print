@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppLogo } from '@/components/icons';
@@ -21,8 +22,8 @@ function WelcomeHeader() {
         </div>
         <div className="flex items-center gap-4">
             <ThemeToggle />
-            <div className="flex items-center p-1 rounded-full bg-primary/10 shadow-sm">
-                <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 text-primary hover:text-primary" asChild>
+            <div className="flex items-center p-1 rounded-full bg-primary/10 dark:bg-white shadow-sm">
+                <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 text-primary hover:text-primary dark:text-primary dark:hover:bg-primary/10" asChild>
                   <Link href="/auth/signin">Sign In</Link>
                 </Button>
                 <Button size="sm" className="rounded-full" asChild>
