@@ -20,9 +20,6 @@ function WelcomeHeader() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-            <Link href="/packages" className='text-sm font-medium text-muted-foreground hover:text-primary transition-colors'>
-                Pricing
-            </Link>
             <ThemeToggle />
             <div className="flex items-center p-1 rounded-full bg-primary/10 shadow-sm">
                 <Button variant="ghost" size="sm" className="rounded-full hover:bg-primary/10 text-primary hover:text-primary" asChild>
