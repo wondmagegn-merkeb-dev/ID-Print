@@ -9,7 +9,6 @@ const packageCreateSchema = z.object({
   price: z.string().min(1, 'Price is required.'),
   pdfMerges: z.number().int().positive('PDF Merges must be a positive number.'),
   idGenerations: z.number().int().positive('ID Generations must be a positive number.'),
-  popular: z.boolean().optional(),
 });
 
 
@@ -24,7 +23,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Invalid input', errors: validation.error.formErrors.fieldErrors }, { status: 400 });
     }
 
-    const { name, price, pdfMerges, idGenerations, popular } = validation.data;
+    const { name, price, pdfMerges, idGenerations } = validation.data;
 
     const existingPackage = await prisma.package.findUnique({
       where: { name },
@@ -40,7 +39,6 @@ export async function POST(req: NextRequest) {
         price,
         pdfMerges,
         idGenerations,
-        popular: popular ?? false,
       },
     });
 

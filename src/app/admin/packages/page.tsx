@@ -4,7 +4,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { MoreHorizontal, PlusCircle } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -30,7 +29,6 @@ type Package = {
   price: string;
   pdfMerges: number;
   idGenerations: number;
-  popular: boolean;
   createdAt: string;
 };
 
@@ -170,7 +168,6 @@ export default function AdminPackagesPage() {
                     <TableRow key={plan.id}>
                       <TableCell className="font-medium">
                         {plan.name}
-                        {plan.popular && <Badge variant="outline" className="ml-2">Popular</Badge>}
                       </TableCell>
                       <TableCell>{plan.price}</TableCell>
                       <TableCell>{plan.pdfMerges.toLocaleString()}</TableCell>

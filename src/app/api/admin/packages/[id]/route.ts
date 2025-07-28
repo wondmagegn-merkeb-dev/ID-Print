@@ -9,7 +9,6 @@ const packageUpdateSchema = z.object({
   price: z.string().min(1, 'Price is required.').optional(),
   pdfMerges: z.number().int().positive('PDF Merges must be a positive number.').optional(),
   idGenerations: z.number().int().positive('ID Generations must be a positive number.').optional(),
-  popular: z.boolean().optional(),
 });
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {

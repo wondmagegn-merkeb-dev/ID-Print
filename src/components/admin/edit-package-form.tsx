@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,15 +18,13 @@ import { useToast } from "@/hooks/use-toast"
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent, CardFooter } from "../ui/card"
-import { Checkbox } from "../ui/checkbox"
 import { Skeleton } from "../ui/skeleton"
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  price: z.string().min(1, { message: "Price is required (e.g., $9/month)." }),
+  price: z.string().min(1, { message: "Price is required (e.g., 500 ETB/month)." }),
   pdfMerges: z.coerce.number().int().positive({ message: "Must be a positive number." }),
   idGenerations: z.coerce.number().int().positive({ message: "Must be a positive number." }),
-  popular: z.boolean().default(false),
 });
 
 type EditPackageFormProps = {
@@ -115,7 +112,6 @@ export function EditPackageForm({ packageId }: EditPackageFormProps) {
                     <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-10 w-full" /></div>
                     <div className="space-y-2"><Skeleton className="h-4 w-20" /><Skeleton className="h-10 w-full" /></div>
                 </div>
-                <Skeleton className="h-24 w-full" />
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
                 <Skeleton className="h-10 w-24" />
@@ -149,9 +145,9 @@ export function EditPackageForm({ packageId }: EditPackageFormProps) {
                       name="price"
                       render={({ field }) => (
                           <FormItem>
-                          <FormLabel>Price</FormLabel>
+                          <FormLabel>Price (ETB)</FormLabel>
                           <FormControl>
-                               <Input placeholder="e.g., $29/month or Custom" {...field} />
+                               <Input placeholder="e.g., 1500 ETB/month or Custom" {...field} />
                           </FormControl>
                            <FormMessage />
                           </FormItem>
@@ -184,30 +180,6 @@ export function EditPackageForm({ packageId }: EditPackageFormProps) {
                       )}
                     />
                 </div>
-                
-                 <FormField
-                    control={form.control}
-                    name="popular"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox
-                            checked={field.value}
-                            onCheckedChange={field.onChange}
-                          />
-                        </FormControl>
-                        <div className="space-y-1 leading-none">
-                          <FormLabel>
-                            Mark as Popular
-                          </FormLabel>
-                          <FormDescription>
-                            This will highlight the package on the pricing page.
-                          </FormDescription>
-                        </div>
-                      </FormItem>
-                    )}
-                  />
-
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
                 <Button type="button" variant="outline" onClick={() => router.back()}>Cancel</Button>
