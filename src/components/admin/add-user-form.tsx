@@ -72,7 +72,7 @@ export function AddUserForm() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...values, phone: fullPhoneNumber }),
+        body: JSON.stringify({ ...values, phone: fullPhoneNumber, isAdminCreating: true }),
       });
 
       const result = await response.json();

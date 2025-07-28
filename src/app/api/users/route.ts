@@ -15,6 +15,7 @@ const userCreateSchema = z.object({
   status: z.enum(['Active', 'Inactive']).optional(),
   isChangePassword: z.boolean().optional(),
   invitedById: z.string().optional(),
+  isAdminCreating: z.boolean().optional(),
 });
 
 
@@ -27,7 +28,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Invalid input', errors: validation.error.formErrors.fieldErrors }, { status: 400 });
     }
 
-    const { name, email, phone, password, role, status, isChangePassword, invitedById } = validation.data;
+    const { name, email, phone, password, role, status, isChangePassword, invitedById, isAdminCreating } = validation.data;
 
     const existingUserByEmail = await prisma.user.findUnique({
       where: { email },
@@ -46,7 +47,6 @@ export async function POST(req: NextRequest) {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const isAdminCreating = !!role;
 
     const newUser = await prisma.user.create({
       data: {
