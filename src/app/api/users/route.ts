@@ -12,7 +12,7 @@ const userSchema = z.object({
   email: z.string().email(),
   phone: z.string().min(1),
   password: z.string().min(8),
-  role: z.enum(['Admin', 'User']).optional(),
+  role: z.enum(['Admin', 'User', 'Agent']).optional(),
   status: z.enum(['Active', 'Inactive']).optional(),
   isChangePassword: z.boolean().optional(),
   invitedById: z.string().optional(),
@@ -64,12 +64,11 @@ export async function POST(req: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, 10);
     
     let invitedBySource: 'SELF' | 'ADMIN' | 'USER' = 'SELF';
-    if (role === 'Admin' || role === 'User') { // This implies it's from the admin panel
+    if (role === 'Admin' || role === 'User' || role === 'Agent') { // This implies it's from the admin panel
         invitedBySource = 'ADMIN';
     } else if (invitedById) {
         invitedBySource = 'USER';
     }
-
 
     const newUser = await prisma.user.create({
       data: {
@@ -77,7 +76,7 @@ export async function POST(req: NextRequest) {
         email,
         phone,
         password: hashedPassword,
-        role: role ?? 'User',
+        ...(role && { role }), // Only include role if it is provided
         status: status ?? 'Active',
         isChangePassword: isChangePassword ?? false,
         invitedBySource,
