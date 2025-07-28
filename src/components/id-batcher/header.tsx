@@ -16,7 +16,15 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useRouter } from 'next/navigation';
-  
+import { useEffect, useState } from 'react';
+
+type UserData = {
+    id: string;
+    name: string;
+    email: string;
+    role: "Admin" | "User";
+    avatar?: string | null;
+};
 
 type HeaderProps = {
   credits: number;
@@ -25,10 +33,16 @@ type HeaderProps = {
 
 export function Header({ credits, onCreditsChanged }: HeaderProps) {
   const router = useRouter();
-  // Mock user state and admin check
-  const isLoggedIn = true;
-  const userEmail = "user@example.com"; // In a real app, this would come from auth state
-  const isAdmin = userEmail === 'admin@example.com';
+  const [user, setUser] = useState<UserData | null>(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+        setUser(JSON.parse(storedUser));
+    }
+  }, []);
+
+  const isAdmin = user?.role === 'Admin';
 
   return (
     <header className="bg-card border-b shadow-sm sticky top-0 z-40">
@@ -47,22 +61,22 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
                 <div className="text-sm font-medium text-foreground">Usage Credits</div>
                 <div className="text-xs text-muted-foreground">{isAdmin ? "Unlimited" : `${credits} remaining`}</div>
             </div>
-            {isLoggedIn ? (
+            {user ? (
                  <DropdownMenu>
                  <DropdownMenuTrigger asChild>
                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                      <Avatar className="h-9 w-9">
-                       <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="@user" />
-                       <AvatarFallback>U</AvatarFallback>
+                       <AvatarImage src={user.avatar ?? "https://i.pravatar.cc/150?u=a042581f4e29026704d"} alt={user.name} />
+                       <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
                      </Avatar>
                    </Button>
                  </DropdownMenuTrigger>
                  <DropdownMenuContent className="w-56" align="end" forceMount>
                    <DropdownMenuLabel className="font-normal">
                      <div className="flex flex-col space-y-1">
-                       <p className="text-sm font-medium leading-none">{isAdmin ? "Admin User" : "User"}</p>
+                       <p className="text-sm font-medium leading-none">{user.name}</p>
                        <p className="text-xs leading-none text-muted-foreground">
-                         {isAdmin ? 'admin@example.com' : 'user@example.com'}
+                         {user.email}
                        </p>
                      </div>
                    </DropdownMenuLabel>

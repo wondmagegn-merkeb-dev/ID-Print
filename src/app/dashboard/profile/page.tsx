@@ -156,57 +156,57 @@ export default function ProfilePage() {
 
       {!user ? <ProfileSkeleton /> : (
         <div className="grid md:grid-cols-3 gap-6">
-            <div className="md:col-span-2 grid gap-6">
-            <Card>
-                <CardHeader>
-                <CardTitle>Personal Information</CardTitle>
-                <CardDescription>Update your personal details here.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                <div className="flex items-center space-x-4">
-                    <Avatar className="h-20 w-20">
-                    <AvatarImage src={user.avatar ?? "https://i.pravatar.cc/150?u=a042581f4e29026704d"} />
-                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <Button variant="outline">Change Photo</Button>
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="name">Full Name</Label>
-                    <Input id="name" defaultValue={user.name} />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" type="email" defaultValue={user.email} disabled />
-                </div>
-                </CardContent>
-                <CardFooter className="flex justify-end">
-                <Button>Update Information</Button>
-                </CardFooter>
-            </Card>
-            
-            <Card>
-                <CardHeader>
-                <CardTitle>Password</CardTitle>
-                <CardDescription>Change your password. Leave fields blank to keep your current password.</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                <div className="space-y-2">
-                    <Label htmlFor="current-password">Current Password</Label>
-                    <Input id="current-password" type="password" />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="new-password">New Password</Label>
-                    <Input id="new-password" type="password" />
-                </div>
-                <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm New Password</Label>
-                    <Input id="confirm-password" type="password" />
-                </div>
-                </CardContent>
-                <CardFooter className="flex justify-end">
-                <Button>Change Password</Button>
-                </CardFooter>
-            </Card>
+            <div className="md:col-span-2 grid md:grid-cols-2 gap-6 items-start">
+              <Card>
+                  <CardHeader>
+                  <CardTitle>Personal Information</CardTitle>
+                  <CardDescription>Update your personal details here.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                  <div className="flex items-center space-x-4">
+                      <Avatar className="h-20 w-20">
+                      <AvatarImage src={user.avatar ?? "https://i.pravatar.cc/150?u=a042581f4e29026704d"} />
+                      <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <Button variant="outline">Change Photo</Button>
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="name">Full Name</Label>
+                      <Input id="name" defaultValue={user.name} />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="email">Email Address</Label>
+                      <Input id="email" type="email" defaultValue={user.email} disabled />
+                  </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-end">
+                  <Button>Update Information</Button>
+                  </CardFooter>
+              </Card>
+              
+              <Card>
+                  <CardHeader>
+                  <CardTitle>Password</CardTitle>
+                  <CardDescription>Change your password.</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                      <Label htmlFor="current-password">Current Password</Label>
+                      <Input id="current-password" type="password" />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="new-password">New Password</Label>
+                      <Input id="new-password" type="password" />
+                  </div>
+                  <div className="space-y-2">
+                      <Label htmlFor="confirm-password">Confirm New Password</Label>
+                      <Input id="confirm-password" type="password" />
+                  </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-end">
+                  <Button>Change Password</Button>
+                  </CardFooter>
+              </Card>
             </div>
 
             <div className="space-y-6">
