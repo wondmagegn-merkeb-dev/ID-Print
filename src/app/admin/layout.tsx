@@ -21,6 +21,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Button } from '@/components/ui/button';
 
 const menuItems = [
     { href: "/admin/dashboard", icon: Home, label: "Dashboard" },
@@ -39,6 +40,11 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const activeItem = menuItems.find(item => pathname.startsWith(item.href));
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    router.push('/auth/signin');
+  };
 
   return (
     <SidebarProvider>
@@ -63,19 +69,25 @@ export default function AdminLayout({
         </SidebarContent>
         <SidebarSeparator />
         <SidebarFooter>
-            <div className="flex items-center gap-2 p-2">
-                <Avatar className="h-8 w-8">
-                    <AvatarImage src="https://github.com/shadcn.png" alt="@admin" />
-                    <AvatarFallback>AD</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col">
-                    <span className="text-sm font-semibold">Admin User</span>
-                     <div className="flex gap-2 text-xs">
-                        <Link href="/admin/profile" className="text-muted-foreground hover:underline">
-                            Profile
-                        </Link>
+            <div className="flex items-center justify-between gap-2 p-2">
+                <div className='flex items-center gap-2'>
+                    <Avatar className="h-8 w-8">
+                        <AvatarImage src="https://github.com/shadcn.png" alt="@admin" />
+                        <AvatarFallback>AD</AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                        <span className="text-sm font-semibold">Admin User</span>
+                        <div className="flex gap-2 text-xs">
+                            <Link href="/admin/profile" className="text-muted-foreground hover:underline">
+                                Profile
+                            </Link>
+                        </div>
                     </div>
                 </div>
+                <Button variant="ghost" size="icon" onClick={handleLogout} className="text-sidebar-foreground/70 hover:text-sidebar-foreground">
+                    <LogOut className="h-4 w-4" />
+                    <span className="sr-only">Sign Out</span>
+                </Button>
             </div>
         </SidebarFooter>
       </Sidebar>

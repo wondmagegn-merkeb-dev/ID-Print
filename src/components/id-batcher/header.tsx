@@ -42,6 +42,11 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
     }
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    router.push('/auth/signin');
+  };
+
   const isAdmin = user?.role === 'Admin';
 
   return (
@@ -99,6 +104,11 @@ export function Header({ credits, onCreditsChanged }: HeaderProps) {
                       <span>Saved Sessions</span>
                     </DropdownMenuItem>
                    </Link>
+                   <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Sign Out</span>
+                    </DropdownMenuItem>
                  </DropdownMenuContent>
                </DropdownMenu>
             ) : (
