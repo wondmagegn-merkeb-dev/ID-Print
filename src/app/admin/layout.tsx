@@ -101,15 +101,15 @@ function AdminLayoutContent({ children }: { children: React.ReactNode }) {
             </div>
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
-        <header className="flex h-14 items-center gap-4 border-b bg-background/80 round-md backdrop-blur-sm px-6 sticky top-0 z-30 md:rounded-t-xl">
+      <SidebarInset className="flex flex-col">
+        <header className="flex h-14 shrink-0 items-center gap-4 border-b bg-background/80 round-md backdrop-blur-sm px-6 sticky top-0 z-30 md:rounded-t-xl">
             <SidebarTrigger className="md:hidden" />
             <div className="flex-1">
                 <h1 className="text-lg font-semibold">{activeItem?.label || 'Admin'}</h1>
             </div>
             <ThemeToggle />
         </header>
-        <main className="flex-1 p-6">{children}</main>
+        <main className="flex-1 overflow-auto p-6">{children}</main>
       </SidebarInset>
     </SidebarProvider>
   );
