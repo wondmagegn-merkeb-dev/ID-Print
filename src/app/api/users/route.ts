@@ -1,4 +1,5 @@
 
+'use server';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
@@ -36,7 +37,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'An account with this email already exists.' }, { status: 409 });
     }
 
-    const existingUserByPhone = await prisma.user.findUnique({
+    const existingUserByPhone = await prisma.user.findFirst({
       where: { phone },
     });
     
