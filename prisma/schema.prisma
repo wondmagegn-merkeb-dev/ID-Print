@@ -2,8 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -11,31 +10,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  User
-  Admin
-  Agent
+model User {
+  id               String          @id @default(cuid())
+  name             String
+  email            String          @unique
+  phone            String          @unique
+  password         String
+  role             String          @default("User") // "User" or "Admin"
+  status           String          @default("Active") // "Active" or "Inactive"
+  avatar           String?
+  isChangePassword Boolean         @default(false)
+  invitedBySource  String          @default("SELF") // "SELF", "ADMIN", "USER"
+  invitedById      String?
+  invitedBy        User?           @relation("UserReferrals", fields: [invitedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  referrals        User[]          @relation("UserReferrals")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  Package          Package?        @relation(fields: [packageId], references: [id])
+  packageId        String?
 }
 
-model User {
-  id                   String  @id @default(cuid())
-  name                 String
-  email                String  @unique
-  phone                String? @unique
-  password             String
-  avatar               String?
-  role                 Role    @default(User)
-  status               String  @default("Active")
-  isChangePassword     Boolean @default(false)
-  referralGiftReceived Boolean @default(false)
-
-  invitedBySource String @default("SELF") // "SELF", "ADMIN", "USER"
-
-  invitedBy   User?   @relation("UserReferrals", fields: [invitedById], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  invitedById String?
-
-  referrals User[] @relation("UserReferrals")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Package {
+  id            String   @id @default(cuid())
+  name          String   @unique
+  price         String // Can be "$X/month" or "Custom"
+  pdfMerges     Int
+  idGenerations Int
+  popular       Boolean  @default(false)
+  users         User[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 }
