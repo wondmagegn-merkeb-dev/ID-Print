@@ -124,7 +124,7 @@ export default function AdminPackagesPage() {
         <TableCell><Skeleton className="h-5 w-16" /></TableCell>
         <TableCell><Skeleton className="h-5 w-20" /></TableCell>
         <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-        <TableCell className="text-right"><Skeleton className="h-8 w-8" /></TableCell>
+        <TableCell className="text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
       </TableRow>
     ))
   );
