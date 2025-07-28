@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2 } from 'lucide-react';
+import { PlusCircle, ChevronLeft, ChevronRight, Pencil, Trash2, Search } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
@@ -24,6 +24,7 @@ import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SortableTableHead } from '@/components/ui/sortable-table-head';
+import { Input } from '@/components/ui/input';
 
 type User = {
   id: string;
@@ -53,6 +54,7 @@ export default function AdminUsersPage() {
   const [error, setError] = useState<string | null>(null);
   const [sortKey, setSortKey] = useState<SortKey>('createdAt');
   const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [searchQuery, setSearchQuery] = useState('');
 
 
   useEffect(() => {
@@ -80,11 +82,19 @@ export default function AdminUsersPage() {
     }
     fetchUsers();
   }, [toast]);
+  
+  const filteredUsers = useMemo(() => {
+    return users.filter(user =>
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.phone.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [users, searchQuery]);
 
   const sortedUsers = useMemo(() => {
-    if (!sortKey) return users;
+    if (!sortKey) return filteredUsers;
 
-    const sorted = [...users].sort((a, b) => {
+    const sorted = [...filteredUsers].sort((a, b) => {
         const aValue = a[sortKey];
         const bValue = b[sortKey];
 
@@ -101,13 +111,20 @@ export default function AdminUsersPage() {
     }
     
     return sorted;
-  }, [users, sortKey, sortDirection]);
+  }, [filteredUsers, sortKey, sortDirection]);
 
   const totalPages = Math.ceil(sortedUsers.length / USERS_PER_PAGE);
   const paginatedUsers = sortedUsers.slice(
     (currentPage - 1) * USERS_PER_PAGE,
     currentPage * USERS_PER_PAGE
   );
+  
+  useEffect(() => {
+    if (currentPage > totalPages && totalPages > 0) {
+      setCurrentPage(totalPages);
+    }
+  }, [searchQuery, currentPage, totalPages]);
+
 
   const handleSort = (key: SortKey) => {
     if (sortKey === key) {
@@ -196,7 +213,7 @@ export default function AdminUsersPage() {
       <div className="grid gap-6">
         <Card>
           <CardHeader>
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mb-4">
               <div>
                   <CardTitle>Manage Users</CardTitle>
                   <CardDescription>A list of all registered users.</CardDescription>
@@ -207,6 +224,15 @@ export default function AdminUsersPage() {
                       Add New User
                   </Link>
               </Button>
+            </div>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search users by name, email, or phone..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 w-full"
+              />
             </div>
           </CardHeader>
           <CardContent>
