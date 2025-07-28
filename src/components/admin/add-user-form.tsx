@@ -67,12 +67,12 @@ export function AddUserForm() {
     setIsLoading(true);
     const fullPhoneNumber = `+251${values.phone}`;
     try {
-      const response = await fetch('/api/users', {
+      const response = await fetch('/api/admin/users', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...values, phone: fullPhoneNumber, isAdminCreating: true }),
+        body: JSON.stringify({ ...values, phone: fullPhoneNumber }),
       });
 
       const result = await response.json();
