@@ -7,15 +7,31 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { ChevronLeft, ExternalLink, Shield, Copy, Share2 } from "lucide-react";
+import { ChevronLeft, ExternalLink, Shield, Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+type User = {
+    id: string;
+    name: string;
+    email: string;
+    role: "Admin" | "User";
+    avatar?: string | null;
+};
 
 function ReferralCard({ userId }: { userId: string }) {
     const { toast } = useToast();
-    const referralLink = `${window.location.origin}/auth/signup?ref=${userId}`;
+    const [referralLink, setReferralLink] = useState('');
+
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            setReferralLink(`${window.location.origin}/auth/signup?ref=${userId}`);
+        }
+    }, [userId]);
     
     const copyToClipboard = () => {
         navigator.clipboard.writeText(referralLink).then(() => {
@@ -31,6 +47,8 @@ function ReferralCard({ userId }: { userId: string }) {
             });
         });
     };
+
+    if (!referralLink) return null;
 
     return (
         <Card>
@@ -54,14 +72,68 @@ function ReferralCard({ userId }: { userId: string }) {
     )
 }
 
+function ProfileSkeleton() {
+    return (
+        <div className="grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 grid gap-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Personal Information</CardTitle>
+                        <CardDescription>Update your personal details here.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="flex items-center space-x-4">
+                            <Skeleton className="h-20 w-20 rounded-full" />
+                            <Skeleton className="h-10 w-28" />
+                        </div>
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-10 w-full" />
+                        </div>
+                        <div className="space-y-2">
+                            <Skeleton className="h-4 w-20" />
+                            <Skeleton className="h-10 w-full" />
+                        </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-end">
+                        <Skeleton className="h-10 w-36" />
+                    </CardFooter>
+                </Card>
+            </div>
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Account Status</CardTitle>
+                        <CardDescription>Your current plan and usage.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <Skeleton className="h-6 w-24 mb-2" />
+                        <Skeleton className="h-4 w-full" />
+                    </CardContent>
+                    <CardFooter>
+                        <Skeleton className="h-10 w-full" />
+                    </CardFooter>
+                </Card>
+            </div>
+        </div>
+    )
+}
+
 export default function ProfilePage() {
   const router = useRouter();
-  
-  // Mock user and admin state - In a real app, this ID would come from the authenticated user's session
-  const userId = "usr_123_abc"; 
-  const userEmail = "user@example.com"; 
-  const isAdmin = userEmail === "admin@example.com";
+  const [user, setUser] = useState<User | null>(null);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+        setUser(JSON.parse(storedUser));
+    } else {
+        // Handle case where user is not logged in, maybe redirect
+        router.push('/auth/signin');
+    }
+  }, [router]);
+  
+  // Mock data for things not in user object yet
   const creditsUsed = 1250;
   const creditsTotal = 2500;
   const creditsPercentage = (creditsUsed / creditsTotal) * 100;
@@ -82,104 +154,106 @@ export default function ProfilePage() {
       </header>
       <Separator />
 
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 grid gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>Update your personal details here.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <Avatar className="h-20 w-20">
-                  <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026704d" />
-                  <AvatarFallback>{isAdmin ? 'A' : 'U'}</AvatarFallback>
-                </Avatar>
-                <Button variant="outline">Change Photo</Button>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input id="name" defaultValue={isAdmin ? "Admin User" : "User"} />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <Input id="email" type="email" defaultValue={isAdmin ? "admin@example.com" : "user@example.com"} disabled />
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button>Update Information</Button>
-            </CardFooter>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Password</CardTitle>
-              <CardDescription>Change your password. Leave fields blank to keep your current password.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="current-password">Current Password</Label>
-                <Input id="current-password" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="new-password">New Password</Label>
-                <Input id="new-password" type="password" />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirm-password">Confirm New Password</Label>
-                <Input id="confirm-password" type="password" />
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-end">
-              <Button>Change Password</Button>
-            </CardFooter>
-          </Card>
-        </div>
-
-        <div className="space-y-6">
+      {!user ? <ProfileSkeleton /> : (
+        <div className="grid md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 grid gap-6">
             <Card>
                 <CardHeader>
-                    <CardTitle>Account Status</CardTitle>
-                    <CardDescription>Your current plan and usage.</CardDescription>
+                <CardTitle>Personal Information</CardTitle>
+                <CardDescription>Update your personal details here.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    {isAdmin ? (
-                        <div>
-                            <div className="flex justify-between items-baseline">
-                                <h3 className="text-lg font-bold text-primary flex items-center gap-2"><Shield /> Admin Plan</h3>
-                            </div>
-                            <p className="text-sm text-muted-foreground">You have unlimited access to all features.</p>
-                        </div>
-                    ) : (
-                        <>
-                            <div>
-                                <div className="flex justify-between items-baseline">
-                                    <h3 className="text-lg font-bold text-primary">Pro Plan</h3>
-                                    <p className="text-lg font-semibold">$29<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
-                                </div>
-                                <p className="text-sm text-muted-foreground">Your plan renews on July 1, 2024.</p>
-                            </div>
-                            <Separator />
-                            <div>
-                                <Label className="text-sm font-medium">Usage Credits</Label>
-                                <Progress value={creditsPercentage} className="mt-2 h-2" />
-                                <p className="text-sm text-muted-foreground mt-2">{creditsUsed} of {creditsTotal} credits used.</p>
-                            </div>
-                        </>
-                    )}
+                <div className="flex items-center space-x-4">
+                    <Avatar className="h-20 w-20">
+                    <AvatarImage src={user.avatar ?? "https://i.pravatar.cc/150?u=a042581f4e29026704d"} />
+                    <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <Button variant="outline">Change Photo</Button>
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <Input id="name" defaultValue={user.name} />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input id="email" type="email" defaultValue={user.email} disabled />
+                </div>
                 </CardContent>
-                <CardFooter>
-                    <Button variant="outline" className="w-full" asChild>
-                        <Link href="/dashboard/packages">
-                            {isAdmin ? 'View All Packages' : 'Manage Subscription'}
-                            <ExternalLink className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
+                <CardFooter className="flex justify-end">
+                <Button>Update Information</Button>
                 </CardFooter>
             </Card>
-             {!isAdmin && <ReferralCard userId={userId} />}
+            
+            <Card>
+                <CardHeader>
+                <CardTitle>Password</CardTitle>
+                <CardDescription>Change your password. Leave fields blank to keep your current password.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                <div className="space-y-2">
+                    <Label htmlFor="current-password">Current Password</Label>
+                    <Input id="current-password" type="password" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="new-password">New Password</Label>
+                    <Input id="new-password" type="password" />
+                </div>
+                <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm New Password</Label>
+                    <Input id="confirm-password" type="password" />
+                </div>
+                </CardContent>
+                <CardFooter className="flex justify-end">
+                <Button>Change Password</Button>
+                </CardFooter>
+            </Card>
+            </div>
+
+            <div className="space-y-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Account Status</CardTitle>
+                        <CardDescription>Your current plan and usage.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {user.role === 'Admin' ? (
+                            <div>
+                                <div className="flex justify-between items-baseline">
+                                    <h3 className="text-lg font-bold text-primary flex items-center gap-2"><Shield /> Admin Plan</h3>
+                                </div>
+                                <p className="text-sm text-muted-foreground">You have unlimited access to all features.</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div>
+                                    <div className="flex justify-between items-baseline">
+                                        <h3 className="text-lg font-bold text-primary">Pro Plan</h3>
+                                        <p className="text-lg font-semibold">$29<span className="text-sm font-normal text-muted-foreground">/mo</span></p>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground">Your plan renews on July 1, 2024.</p>
+                                </div>
+                                <Separator />
+                                <div>
+                                    <Label className="text-sm font-medium">Usage Credits</Label>
+                                    <Progress value={creditsPercentage} className="mt-2 h-2" />
+                                    <p className="text-sm text-muted-foreground mt-2">{creditsUsed} of {creditsTotal} credits used.</p>
+                                </div>
+                            </>
+                        )}
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="outline" className="w-full" asChild>
+                            <Link href="/dashboard/packages">
+                                {user.role === 'Admin' ? 'View All Packages' : 'Manage Subscription'}
+                                <ExternalLink className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </CardFooter>
+                </Card>
+                {user.role !== 'Admin' && <ReferralCard userId={user.id} />}
+            </div>
         </div>
-      </div>
+      )}
     </div>
   )
 }

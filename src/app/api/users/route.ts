@@ -27,20 +27,20 @@ export async function POST(req: NextRequest) {
 
     const { name, email, phone, password, invitedById } = validation.data;
 
-    const existingUserByEmail = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUserByEmail) {
-      return NextResponse.json({ message: 'An account with this email already exists.' }, { status: 409 });
-    }
-
     const existingUserByPhone = await prisma.user.findFirst({
       where: { phone },
     });
     
     if (existingUserByPhone) {
       return NextResponse.json({ message: 'An account with this phone number already exists.' }, { status: 409 });
+    }
+
+    const existingUserByEmail = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (existingUserByEmail) {
+      return NextResponse.json({ message: 'An account with this email already exists.' }, { status: 409 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
