@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ChevronLeft, Edit, Gift, Mail, Phone, User as UserIcon, Users, CreditCard, Package, BarChart } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Label } from '@/components/ui/label';
 
 // Mock data - in a real app, this would be fetched from your API
 const MOCK_USER_DATA = {
@@ -213,4 +214,3 @@ export default function UserDetailPage() {
         </div>
     );
 }
-
