@@ -38,7 +38,7 @@ export function SortableTableHead<T extends string>({
     return (
         <TableHead className={cn("p-2", className)}>
             {isSortable ? (
-                <Button variant="ghost" onClick={handleSort} className="px-2 py-1 h-auto">
+                <Button variant="ghost" onClick={handleSort} className="px-2 py-1 h-auto hover:bg-transparent">
                     {label}
                     {isSorted && <SortIcon className="ml-2 h-4 w-4" />}
                 </Button>
@@ -48,4 +48,3 @@ export function SortableTableHead<T extends string>({
         </TableHead>
     );
 }
-
