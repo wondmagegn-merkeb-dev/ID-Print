@@ -13,36 +13,36 @@ const initialPlans = [
     {
       name: "Starter",
       price: "$5/month",
-      description: "For hobbyists and personal projects.",
-      features: "100 extractions/month",
+      pdfMerges: 50,
+      idGenerations: 100,
       popular: false,
     },
     {
       name: "Basic",
       price: "$9/month",
-      description: "For individuals and small teams.",
-      features: "500 extractions/month",
+      pdfMerges: 250,
+      idGenerations: 500,
       popular: false,
     },
     {
       name: "Pro",
       price: "$29/month",
-      description: "For growing businesses.",
-      features: "2500 extractions/month",
+      pdfMerges: 1000,
+      idGenerations: 2500,
       popular: true,
     },
     {
       name: "Business",
       price: "$99/month",
-      description: "For established businesses.",
-      features: "10,000 extractions/month",
+      pdfMerges: 5000,
+      idGenerations: 10000,
       popular: false,
     },
     {
       name: "Enterprise",
       price: "Custom",
-      description: "For large organizations.",
-      features: "Unlimited extractions",
+      pdfMerges: "Unlimited",
+      idGenerations: "Unlimited",
       popular: false,
     },
 ];
@@ -80,7 +80,8 @@ export default function AdminPackagesPage() {
               <TableRow>
                 <TableHead>Package Name</TableHead>
                 <TableHead>Price</TableHead>
-                <TableHead>Features</TableHead>
+                <TableHead>PDF Merges</TableHead>
+                <TableHead>ID Generations</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -92,7 +93,8 @@ export default function AdminPackagesPage() {
                     {plan.popular && <Badge variant="outline" className="ml-2">Popular</Badge>}
                   </TableCell>
                   <TableCell>{plan.price}</TableCell>
-                  <TableCell>{plan.features}</TableCell>
+                  <TableCell>{plan.pdfMerges.toLocaleString()}</TableCell>
+                  <TableCell>{plan.idGenerations.toLocaleString()}</TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
